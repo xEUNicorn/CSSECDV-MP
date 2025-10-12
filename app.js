@@ -4,41 +4,41 @@ const { engine } = require('express-handlebars');
 const path = require('path');
 const app = express();
 const bodyParser = require('body-parser');
-//const connectDB = require('./server/config/db');
+const connectDB = require('./server/config/db');
 
 const mongoose = require('mongoose');
+const { sampleUsers, sampleOrders, sampleUpdates } = require('./server/sample'); //delete
+//const { employeeUsers } = require('./server/user');       //for deployment
+const User = require('./server/models/User');
+const Order = require('./server/models/Order');
+const Update = require('./server/models/Update');
+
 const Sessions =  require('./server/models/Sessions.js');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
 
-const port = 3000;
+const PORT = 3000;
 
-
-//connectDB();
-
-const uri = "mongodb+srv://galaxymate77:rDRMxRMUzKNzX7NM@parcel-track.ajsas.mongodb.net/?retryWrites=true&w=majority&appName=Parcel-Track";
-mongoose.connect(uri)
-  .then(() => {
-    console.log('MongoDB connected');
-  })
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
-  });
-
-const User = require('./server/models/User');
-const Order = require('./server/models/Order');
-const Update = require('./server/models/Update');
-const { employeeUsers } = require('./server/users');
+connectDB();
 
 async function createSample() {
+    //delete
+    await User.deleteMany(); // Clear existing
+    await Order.deleteMany();
+    await Update.deleteMany();
+
+    await User.insertMany(sampleUsers);
+    await Order.insertMany(sampleOrders);
+    await Update.insertMany(sampleUpdates);
+
+    /*          //for deployment
     const existingUsers = await User.countDocuments();
 
     if (existingUsers === 0) {
         await User.insertMany(employeeUsers);
     }
-
-
+    */
 }
 
 app.use(session({
@@ -99,6 +99,6 @@ app.use('/', require('./server/routes/main.js'));
 app.use('/search_parcel', require('./server/routes/tracking.js'));
 app.use('/admin', require('./server/routes/admin.js'));
 
-app.listen(port, () => {
-    console.log(`Server is listening on port ${port}...`);
+app.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}...`);
 })

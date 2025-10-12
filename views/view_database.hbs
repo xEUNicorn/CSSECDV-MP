@@ -218,34 +218,11 @@
         var idData = {
             id: id
         }
-        console.log(id);
 
         $.post('/admin/view-orders/more-details', idData, function (message, status) {
-            var itemDesc = String(message.orderDetails.itemDesc);
-            let formattedDesc = '';
-            let start = 0;
-            console.log(typeof itemDesc);
-            console.log("format");
-            while (start < itemDesc.length) {
-                let end = start + 35;
-
-                if (end < itemDesc.length) {
-                    let isWord = itemDesc.lastIndexOf(' ', end);    //find last instance of space before end
-                    if (isWord > start) {
-                        formattedDesc += itemDesc.substring(start, isWord) + '<br/>';
-                        start = isWord + 1;
-                    } else {
-                        formattedDesc += itemDesc.substring(start, end) + '<br/>';
-                        start = end;
-                    }
-                } else {
-                    formattedDesc += itemDesc.substring(start);
-                    break;
-                }
-            }
             //console.log(typeof (message.orderDetails.orderId));
             document.getElementById('orderIdDetails').innerHTML = "TRANSACTION #" + message.orderDetails.orderId;
-            document.getElementById('itemDetails').innerHTML = formattedDesc;
+            document.getElementById('itemDetails').innerHTML = message.orderDetails.itemDesc;
             document.getElementById('receiverDetails').innerHTML = message.orderDetails.receiverName;
             document.getElementById('senderDetails').innerHTML = message.orderDetails.senderName;
             document.getElementById('chargeDetails').innerHTML = message.orderDetails.total;
@@ -430,35 +407,4 @@
         if (popup)
             popup[0].style.display = "none";
     }
-
-    function isPopupVisible() {
-        const popups = document.querySelectorAll('[name$="Popup"]');
-        const isAnyPopupVisible = Array.from(popups).some(popup => popup.style.display !== "none");
-
-        // Additional conditions for the forms
-        const controlIdInput = document.getElementById("controlId");
-        const hubToHubSearch = document.getElementById("hubToHubSearch");
-        const dailySearch = document.getElementById("dailySearch");
-        const monthlySearch = document.getElementById("monthlySearch");
-        const annualSearch = document.getElementById("annualSearch");
-
-        const isControlIdInputNotEmpty = controlIdInput && controlIdInput.value.trim() !== "";
-        const isHubToHubVisible = hubToHubSearch && hubToHubSearch.style.display !== "none";
-        const isDailySearchVisible = dailySearch && dailySearch.style.display !== "none";
-        const isMonthlySearchVisible = monthlySearch && monthlySearch.style.display !== "none";
-        const isAnnualSearchVisible = annualSearch && annualSearch.style.display !== "none";
-
-        return ( isAnyPopupVisible || isControlIdInputNotEmpty || isHubToHubVisible || 
-                 isDailySearchVisible || isMonthlySearchVisible || isAnnualSearchVisible );
-    }
-
-    function setupAutoRefresh(interval = 5000) {
-        setInterval(() => {
-            if (!isPopupVisible()) {
-                location.reload();
-            }
-        }, interval);
-    }
-
-    setupAutoRefresh();
 </script>

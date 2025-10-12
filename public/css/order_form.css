@@ -241,9 +241,7 @@ button {
     height: 28px;
     margin-top: 1vh;
     margin-bottom: 3vh;
-    padding-top: 4px;
     padding-left: 1vw;
-    font-family: "Poppins";
 }
 #discount-div {
     margin-left: 1vw;
@@ -269,9 +267,7 @@ button {
     height: 28px;
     margin-top: 1vh;
     margin-bottom: 3vh;
-    padding-top: 4px;
     padding-left: 1vw;
-    font-family: "Poppins";
 }
 select {
     font-family: "Poppins";

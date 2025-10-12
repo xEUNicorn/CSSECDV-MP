@@ -45,13 +45,6 @@ router.post('/login', passport.authenticate('local', { successRedirect : '/admin
 router.get('/view-orders', checkAuthenticated, async (req, res) =>{
     try {
         const orders = await Order.find();
-        orders.forEach(order => {
-            var description = order.itemDesc.join(", "); 
-            if (description.length > 25) {
-                description = description.substring(0, 22) + "..."; 
-            }
-            order.itemDesc = description;
-        });
         res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders });
     }
     catch (error)
@@ -72,9 +65,6 @@ router.post('/view-orders/more-details', checkAuthenticated, async (req, res) =>
             const findUpdate = await Update.findOne({ updateId: lastItem });
             updateDate = findUpdate.updateDate;
         }
-
-        var description = orderDetails.itemDesc.join(", "); 
-        orderDetails.itemDesc = description;
         
         res.json({
             orderDetails: { 
