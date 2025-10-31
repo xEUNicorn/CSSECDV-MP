@@ -43,32 +43,31 @@
         <div id="right-box">
             <div id="right-container">
                 <h1>Create Account</h1>
-                <form action="/create_account" method="POST" id="login-form">
-                    <div class="flex-parent" id="right-flex-parent" id="inputs">
-                        <div class="container-inputs">
-                            <input type="username" placeholder="Username" name="username" required>
-                            <br>
-                            <input type="firstname" placeholder="First Name" name="firstname" required>
-                            <br>
-                            <input type="lastname" placeholder="Last Name" name="lastname" required>
-                            <br>
-                            <div class="eye-div" id="eye-div-pass" style="cursor:pointer">
-                                <input id="pass" type="password" placeholder="********" name="pass" minlength="10" required>
-                                <i class="fas fa-eye"></i>
-                            </div>
-                            <br>
-                            <div class="eye-div" id="eye-div-retype" style="cursor:pointer">
-                                <input id="retype-pass" type="password" placeholder="********" name="retype-pass" required>
-                                <i class="fas fa-eye"></i>
-                            </div>
+                <div class="flex-parent" id="right-flex-parent" id="inputs">
+                    <div class="container-inputs">
+                        <input type="text" placeholder="Username" name="username" id="username" required>
+                        <br>
+                        <input type="text" placeholder="First Name" name="firstname" id="firstname" required>
+                        <br>
+                        <input type="text" placeholder="Last Name" name="lastname" id="lastname" required>
+                        <br>
+                        <div class="eye-div" id="eye-div-pass" style="cursor:pointer">
+                            <input id="pass" type="password" placeholder="********" name="pass" minlength="10" required>
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <br>
+                        <div class="eye-div" id="eye-div-retype" style="cursor:pointer">
+                            <input id="retype-pass" type="password" placeholder="********" name="retype-pass" required>
+                            <i class="fas fa-eye"></i>
                         </div>
                     </div>
-                    <button id="create-account-btn" type="submit" style="cursor:pointer">Create</button>
-                </form>
+                </div>
+                <button id="create-account-btn" type="submit" style="cursor:pointer">Create</button>
             </div>
         </div>
     </div>
 </div>
+
 {{!-- error popup --}}
 <div id="order-popup" style="display: none;">
     <h1 id="error-title">INVALID / MISSING INPUTS</h1>
@@ -79,6 +78,67 @@
     <button id="close-error-btn">OKAY</button>
 </div>
 {{!-- until here --}}
+
+<div class="flex-parent" id="security-questions" style="display: none;">
+    <div id="left-bg2">
+        <div id="left-box2">
+            <div id="left-container2">
+                <h1>SECURITY QUESTIONS</h1>
+                <div class="flex-parent" id="left-flex-parent2">
+                    <div class="sec-ques">
+                        <h2><mark>What is this for?</mark></h2>
+                        <p>This helps us verify your identification further!</p>
+                        <p>You can start by choosing <b>three (3) PRESET QUESTIONS</b></p>
+                        <p>and answer them <i>as honestly as possible.</i></p>
+                        <br>
+                        <p><b>Don't forget your answers!</b></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="right-bg2">
+        <div id="right-box2">
+            <div id="right-container2">
+                <div class="flex-parent" id="right-flex-parent2">
+                    <div class="questionnaires">
+                        <select name="ques1" id="question1" >
+                            <option value="">&#40Select Question&#41</option>
+                            <option value="1">First Pet's Name</option>
+                            <option value="2">Mother's maiden name</option>
+                            <option value="3">Childhood Nickname</option>
+                            <option value="4">Name of the first school you attended</option>
+                            <option value="5">Favorite subject in high school</option>
+                        </select>
+                        <input type="text" placeholder="Answer..." name="answer1" id="answer1" required>
+                        <br> <br>
+                        <select name="ques2" id="question2" >
+                            <option value="">&#40Select Question&#41</option>
+                            <option value="1">First Pet's Name</option>
+                            <option value="2">Mother's maiden name</option>
+                            <option value="3">Childhood Nickname</option>
+                            <option value="4">Name of the first school you attended</option>
+                            <option value="5">Favorite subject in high school</option>
+                        </select>
+                        <input type="text" placeholder="Answer..." name="answer2" id="answer2" required>
+                        <br> <br>
+                        <select name="ques3" id="question3" >
+                            <option value="">&#40Select Question&#41</option>
+                            <option value="1">First Pet's Name</option>
+                            <option value="2">Mother's maiden name</option>
+                            <option value="3">Childhood Nickname</option>
+                            <option value="4">Name of the first school you attended</option>
+                            <option value="5">Favorite subject in high school</option>
+                        </select>
+                        <input type="text" placeholder="Answer..." name="answer3" id="answer3" required>
+                        <br>
+                    </div>
+                </div>
+                <button id="submit-account-btn" type="submit" style="cursor:pointer">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     const passwordField = document.getElementById("pass");
