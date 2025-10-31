@@ -98,6 +98,7 @@ app.use(passport.session());
 app.use('/', require('./server/routes/main.js'));
 app.use('/search_parcel', require('./server/routes/tracking.js'));
 app.use('/admin', require('./server/routes/admin.js'));
+app.use('/create_account', require('./server/routes/account.js')); // path for creating accounts
 
 app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}...`);

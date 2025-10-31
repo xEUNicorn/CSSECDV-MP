@@ -1,0 +1,115 @@
+<div class="flex-parent">
+    <div id="left-bg">
+        <div id="left-box">
+            <div id="left-container">
+                <h1>RULES FOR PASSWORD</h1>
+                <div class="flex-parent" id="left-flex-parent" id="rules">
+                    <div class="pass-rules">
+                        <div class="pass-rules-items">
+                            <img class="checklist" id="rule-length" src="/img/invalid.png" width="20"/>
+                            <p>Must be <b><mark>10 characters</mark></b> long</p>
+                        </div>
+                        
+                        <div class="pass-rules-items">
+                            <img class="checklist" id="rule-uppercase" src="/img/invalid.png" width="20"/>
+                            <p>Must have at least <b><mark>one (1) UPPERCASE</mark></b> character</p>
+                        </div>
+
+                        <div class="pass-rules-items">
+                            <img class="checklist" id="rule-lowercase" src="/img/invalid.png" width="20"/>
+                            <p>Must have at least <b><mark>one (1) LOWERCASE</mark></b> character</p>
+                        </div>
+
+                        <div class="pass-rules-items">
+                            <img class="checklist" id="rule-numerical" src="/img/invalid.png" width="20"/>
+                            <p>Must have at least <b><mark>one (1) NUMERICAL</mark></b> character</p>
+                        </div>
+
+                        <div class="pass-rules-items">
+                            <img class="checklist" id="rule-symbol" src="/img/invalid.png" width="20"/>
+                            <p>Must have at least <b><mark>one (1) SYMBOL</mark></b> character</p>
+                        </div>
+
+                        <div class="pass-rules-items">
+                            <img class="checklist" id="rule-name" src="/img/invalid.png" width="20"/>
+                            <p>Must <b><mark>not include</mark></b> your <b><mark>NAME</mark></b> or <b><mark>USERNAME</mark></b></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="right-bg">
+        <div id="right-box">
+            <div id="right-container">
+                <h1>Create Account</h1>
+                <form action="/create_account" method="POST" id="login-form">
+                    <div class="flex-parent" id="right-flex-parent" id="inputs">
+                        <div class="container-inputs">
+                            <input type="username" placeholder="Username" name="username" required>
+                            <br>
+                            <input type="firstname" placeholder="First Name" name="firstname" required>
+                            <br>
+                            <input type="lastname" placeholder="Last Name" name="lastname" required>
+                            <br>
+                            <div class="eye-div" id="eye-div-pass" style="cursor:pointer">
+                                <input id="pass" type="password" placeholder="********" name="pass" minlength="10" required>
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <br>
+                            <div class="eye-div" id="eye-div-retype" style="cursor:pointer">
+                                <input id="retype-pass" type="password" placeholder="********" name="retype-pass" required>
+                                <i class="fas fa-eye"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="create-account-btn" type="submit" style="cursor:pointer">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{!-- error popup --}}
+<div id="order-popup" style="display: none;">
+    <h1 id="error-title">INVALID / MISSING INPUTS</h1>
+    <input type="hidden" id="hidden-orderid">
+    <table class="popup-table">
+        <!--<tr class="popup-tr"></tr>-->
+    </table>
+    <button id="close-error-btn">OKAY</button>
+</div>
+{{!-- until here --}}
+
+<script>
+    const passwordField = document.getElementById("pass");
+    const eyeSymbol = document.querySelector("#eye-div-pass i");
+    eyeSymbol.addEventListener("click", function () {
+    if (passwordField.type === "password") {
+        passwordField.type = "text";
+        eyeSymbol.classList.remove("fa-eye-slash");
+        eyeSymbol.classList.add("fa-eye");
+    } else {
+        passwordField.type = "password";
+        eyeSymbol.classList.remove("fa-eye");
+        eyeSymbol.classList.add("fa-eye-slash");
+    }
+    });
+
+    const retypeField = document.getElementById("retype-pass");
+    const retypeEyeSymbol = document.querySelector("#eye-div-retype i");
+    retypeEyeSymbol.addEventListener("click", function () {
+    if (retypeField.type === "password") {
+        retypeField.type = "text";
+        retypeEyeSymbol.classList.remove("fa-eye-slash");
+        retypeEyeSymbol.classList.add("fa-eye");
+    } else {
+        retypeField.type = "password";
+        retypeEyeSymbol.classList.remove("fa-eye");
+        retypeEyeSymbol.classList.add("fa-eye-slash");
+    }
+    });
+
+    function showPop(){
+        document.getElementById("popup").style.visibility = "visible";
+    }
+</script>

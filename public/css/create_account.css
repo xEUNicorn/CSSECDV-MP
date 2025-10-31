@@ -5,14 +5,18 @@
 /* Jost */
 @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@100..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
+/* credits to hqrloveq from Flaticon (https://www.flaticon.com) for the icons */
+
 body {
 	margin: 0px;
 }
+
 .flex-parent {
 	padding: 0px;
 	display: flex;
 	justify-content: center;
 }
+
 #left-bg {
 	background-color: #fffaeb;
 	width: 50vw;
@@ -35,17 +39,46 @@ body {
 	margin-right: 0;
 	box-shadow: 5px 5px 5px -5px rgba(0, 0, 0, 0.5);
 }
-#logo {
-	width: 50%;
-	margin-top: 32vh;
+
+#left-container {
+	padding-top: 10px;
 }
 
-p {
-	font-size: 16px;
-	color: #ffffff;
-	font-family: "Inter";
-	margin-top: 5vh;
+h1 {
+	font-family: 'Big Shoulders Display';
+	font-weight: bolder;
+	margin-top: 10vh;
+	margin-bottom: 5vh;
+	font-size: 48px;
 }
+
+.pass-rules {
+    padding-top: 10px;
+}
+
+.pass-rules-items {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.pass-rules-items p {
+    font-family: 'Jost';
+    margin: 10px;
+}
+
+.pass-rules-items mark {
+    background-color: rgba(255, 250, 235, 0.85); /* same as #fffaeb but in rbga to change opacity*/
+    border-radius: 5px;
+    padding: 1px;
+}
+
+.checklist {
+    max-width: 100%;
+    height: auto;
+}
+
 #right-bg {
 	background-color: #fc0404;
 	width: 50vw;
@@ -61,16 +94,14 @@ p {
 	padding-top: 0px;
 	box-shadow: 5px 5px 5px -5px rgba(0, 0, 0, 0.5);
 }
-#container {
+#right-container {
 	padding-top: 10px;
 }
-h1 {
-	font-family: 'Big Shoulders Display';
-	font-weight: bolder;
-	margin-top: 10vh;
-	margin-bottom: 5vh;
-	font-size: 48px;
+
+#right-flex-parent input {
+    margin: 10px;
 }
+
 input {
 	background: transparent;
     border: none;
@@ -78,20 +109,39 @@ input {
 	height: 31px;
 	width: 25vw;
 }
+
 input:focus-visible {
 	outline: none;
     border-bottom: 1px solid #000000;
 }
 input[type='text'] {
-    font-size: 18px;
+    font-size: 15px;
 }
 input::placeholder {
-	font-size: 24px;
+	font-size: 18px;
 	font-family: "Jost";
 }
-#password {
+#pass #retype-pass {
 	margin-top: 40px;
 }
+
+.eye-div {
+	display: flex;
+    align-items: center;
+	justify-content: space-between;
+	box-sizing: border-box;
+	width: 26vw;
+	
+}
+.eye-div input {
+	flex: 1;
+	border: none;
+	background: transparent;
+	outline: none;
+	height: 31px;
+	border-bottom: 1px solid #000000;
+}
+
 #eye-div {
 	margin-top: auto;
 	margin-bottom: 10px;
@@ -99,6 +149,7 @@ input::placeholder {
 	width: 20px;
 	text-align: center;
 }
+
 button {
 	margin-top: 5vh;
 	border-radius: 20px;
@@ -112,32 +163,9 @@ button {
 	font-size: 16px;
 	box-shadow: 5px 5px 5px -5px rgba(0, 0, 0, 0.5);
 }
-h6 {
-	font-family: "Jost";
-	font-weight: 300;
-	color: #fc0404;
-	font-size: 14px;
-	margin-top: 15px;
-	margin-bottom: 0;
-	cursor: pointer;
-	width:max-content;
-}
 
-h6:hover {
-	font-weight: bold;
-	text-decoration: underline;
-}
 
-.forgot-container{
-	display:flex;
-	justify-content: center;
-}
-
-.forgot-container h6 {
-	margin: 20px 10px;
-}
-
-#popup {
+#order-popup {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -147,26 +175,33 @@ h6:hover {
     width: 531px;
     border-radius: 20px;
     text-align: center;
-	padding-inline: 1vw;
+    overflow-y: auto;
 }
-#question-mark {
-    margin-top: 11.5vh;
-}
-h2 {
-    font-family: "Jost";
-    font-size: 24px;
-    color: #000000;
+#error-title {
+    font-family: "Big Shoulders Display";
     font-weight: bold;
-}
-#popup-msg {
-    font-family: "Jost";
+    font-size: 40px;
     color: #fc0404;
-	font-weight: bold;
 }
-#login-link {
-	text-decoration: none;
-	color: #fc0404;
+td {
+    font-family: "Jost";
+    font-size: 20px;
+    text-align: left;
+    padding-left: 5vw;
+    padding-right: 5vw;
 }
-#login-link:visited{
-	color: #fc0404;
+#close-error-btn {
+    background-color: #fffaeb;
+    border-radius: 5px;
+    border: 1px solid #0d0d0d;
+    width: 81px;
+    height: 45px;
+    box-shadow: 1px 1px 5px;
+    text-wrap: nowrap;
+    font-family: 'Arial';
+    color: #000000;
+    font-size: 16px;
+    text-shadow: 0.025px 0.025px 0.005px;
+    margin-top: 3vh;
+    margin-bottom: 3vh;
 }
