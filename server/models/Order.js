@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 
 const OrderSchema = new mongoose.Schema({
     //user inputs
+    userId : String,
     orderId : String,
     senderName : String,
     receiverName : String,
