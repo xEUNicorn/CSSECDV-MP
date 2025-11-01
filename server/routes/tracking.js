@@ -7,6 +7,7 @@ const Update = require('../models/Update.js');
 
 const passport = require('passport');
 require('../config/passport');
+const logger = require('../config/logger'); 
 
 router.get('/', (req, res, next) => {
     if (!req.user) {
@@ -41,7 +42,12 @@ router.post(
 router.post('/', async (req, res) =>{
     try {
         const { id } = req.body;
-        if(!req.user) { 
+        if(!req.user) {
+            logger.warn{(
+                event : 'ACCESS_DENIED',
+                path : '/search_parcel',
+                ip : rep.ip
+            });
             return res.status(401).json({exists:false}); 
         }  
         const trackerId = await Order.findOne({
@@ -57,6 +63,11 @@ router.post('/', async (req, res) =>{
 
 router.get('/track=:id', async (req, res) =>{
     if(!req.user) {
+        logger.warn({
+            event: 'ACCESS_DENIED', 
+            path: req.originalUrl, 
+            ip: req.ip 
+        });
         return res.redirect('/search_parcel/login'); 
     }
     const id = req.params.id;
@@ -82,6 +93,11 @@ router.get('/track=:id', async (req, res) =>{
 
 router.get('/track=:id/more-details', async (req, res) =>{
     if(!req.user){ 
+        logger.warn({
+            event: 'ACCESS_DENIED', 
+            path: req.originalUrl, 
+            ip: req.ip 
+        });
         return res.redirect('/search_parcel/login'); 
     }
     const id = req.params.id;
