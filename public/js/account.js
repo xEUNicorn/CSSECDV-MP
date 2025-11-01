@@ -259,12 +259,12 @@ function disableChanges() {
 async function addToDatabase() {
     try {
         const userId = await generateUserID();
-        const username = $('#username').val();
-        const firstname = $('#firstname').val();
-        const lastname = $('#lastname').val();
+        const username = $('#username').val().trim();
+        const firstname = $('#firstname').val().trim();
+        const lastname = $('#lastname').val().trim();
         const password = $('#pass').val();
 
-        const name = firstname + ", " + lastname;
+        const name = firstname + " " + lastname;
         
 
         var orderData = {

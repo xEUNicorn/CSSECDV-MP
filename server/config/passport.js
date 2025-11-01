@@ -5,14 +5,19 @@ const bcrypt = require('bcrypt');
 const verifyCallback = (req, username, password, done) => {
     console.log(req.body)
     console.log("AUTHENTICATING");
-    User.findOne({ employeeId: username })
+    User.findOne({ username: username })
         .then((user) => {
             console.log("INSIDE");
-            if (!user) {  return done(null, false) }
+            if (!user) {  
+                console.log("no user!") //error message
+                return done(null, false) 
+            }
 
             if(user.password === password){
+                console.log("found!")
                 return done(null, user);
             } else {
+                console.log("not found!")
                 return done(null, false);
             }
         })
@@ -29,15 +34,17 @@ passport.serializeUser((user, done) => {
     done(null, user.id)
 });
 
-passport.deserializeUser((employeeId, done) => {
-    User.findById(employeeId)
+passport.deserializeUser((userId, done) => {
+    console.log("Printing username: ")
+    User.findById(userId)
         .then((user) => {
             console.log("found!")
-            console.log(employeeId)
+            console.log(userId)
             console.log(user)
             done(null, user);
         })
         .catch((err)=> {
+            console.log("not found!")
             done(err);
         })
 })
