@@ -229,7 +229,11 @@ router.post('/add-order', checkAuthenticated,    async (req, res) =>{
         var floatCharge = parseFloat(initialCharge);
         var floatDiscount = parseFloat(discount);
         var floatTotal = parseFloat(total);
+        // placeholder til may customer accounts na tayo
+        const customerID = String(intSenderNum);            
+        
         var addOrder = new Order({
+            userId : customerId,
             orderId : orderId,
             senderName : senderName,
             receiverName : receiverName,
