@@ -5,10 +5,38 @@ const router = express.Router();
 const Order = require('../models/Order.js');
 const Update = require('../models/Update.js');
 
+const passport = require('passport');
+require('../config/passport');
+
+router.get('/', (req, res, next) => {
+    if (!req.user) {
+        return res.redirect('/search_parcel/login');
+    }
+    next();   
+});
 
 router.get('/', async (req, res) =>{
     res.render('search_parcel', {title: "Search | ESMC", css:"search_parcel"});
 })
+
+router.get('/login', (req, res) => {
+    if (req.user) {
+        return res.redirect('/admin/view-orders');
+    }
+    res.render('login', {
+        layout : 'login.hbs',
+        title  : 'Login | ESMC',
+        css    : 'login'
+    });
+});
+
+router.post(
+    '/login',
+    passport.authenticate('local', {
+        successRedirect : '/admin/view-orders',
+        failureRedirect : '/search_parcel/login'
+    })
+);
 
 router.post('/', async (req, res) =>{
     try {
