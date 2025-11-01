@@ -41,12 +41,14 @@ router.post(
 router.post('/', async (req, res) =>{
     try {
         const { id } = req.body;
-        const trackerId = await Order.findOne({ orderId: id });
-        if (trackerId) {
-            res.json({ exists: true });
-        } else {
-            res.json({ exists: false });
-        }
+        if(!req.user) { 
+            return res.status(401).json({exists:false}); 
+        }  
+        const trackerId = await Order.findOne({
+            orderId : id,
+            userID  : req.user.employeeId            
+        });
+        res.json({ exists: Boolean(trackerId) });
     } catch (error) {
         console.error("Database error:", error);
         res.status(500).json({ exists: false });
@@ -54,10 +56,16 @@ router.post('/', async (req, res) =>{
 })
 
 router.get('/track=:id', async (req, res) =>{
+    if(!req.user) {
+        return res.redirect('/search_parcel/login'); 
+    }
     const id = req.params.id;
     console.log(id);
     try {
-        const order = await Order.findOne({ orderId: id });
+        const order = await Order.findOne({ 
+            orderId : id, 
+            userID : req.user.employeeId
+        });
         if (!order) {
             return res.redirect('/search_parcel');
         }
@@ -73,9 +81,15 @@ router.get('/track=:id', async (req, res) =>{
 })
 
 router.get('/track=:id/more-details', async (req, res) =>{
+    if(!req.user){ 
+        return res.redirect('/search_parcel/login'); 
+    }
     const id = req.params.id;
     try {
-        const order = await Order.findOne({ orderId: id });
+        const order = await Order.findOne({ 
+            orderId: id,
+            userID : req.user.employeeId
+        });
         if (!order) {
             return res.redirect('/search_parcel');
         }
