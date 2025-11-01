@@ -5,6 +5,7 @@ const User = require('../models/User.js');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 const Sessions = require('../models/Sessions.js');
+const logger = require('../config/logger');
 require('../config/passport.js')
 
 //const User = require('../models/User.js');
@@ -15,6 +16,12 @@ checkAuthenticated = (req,res, next) => {
     if(req.user){
         return next();
     }
+    logger.warn({
+        event : 'ACCESS_DENIED',
+        path : rep.originalUrl,
+        ip : rep.ip
+    });
+    
     res.redirect('/admin/login');
 }
 
@@ -224,6 +231,14 @@ router.post('/add-order', checkAuthenticated,    async (req, res) =>{
               transDate, originBranch, destBranch,
               initialCharge, discount, total, 
               status, arrivalDate, updates} = req.body;
+
+        if (!senderName || !receiverName) {
+            logger.warn({
+                event : 'VALIDATION_FAIL',
+                reason: 'Missing sender/receiver name',
+                ip : rep,ip
+            });
+        }
         var intSenderNum = parseInt(senderNum);
         var intReceiverNum = parseInt(receiverNum);
         var floatCharge = parseFloat(initialCharge);
