@@ -98,6 +98,16 @@ app.use(passport.session());
 app.use('/', require('./server/routes/main.js'));
 app.use('/search_parcel', require('./server/routes/tracking.js'));
 app.use('/admin', require('./server/routes/admin.js'));
+app.use('/password', require('./server/routes/password.js'));
+
+// 404 Error Handler - Must be last
+app.use((req, res, next) => {
+    res.status(404).render('error404', {
+        layout: false,
+        title: "404 - Page Not Found | ESMC",
+        css: "error404"
+    });
+});
 
 app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}...`);

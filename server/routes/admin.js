@@ -5,6 +5,7 @@ const User = require('../models/User.js');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 const Sessions = require('../models/Sessions.js');
+const { formatDateTime } = require('../middleware/loginSecurity');
 require('../config/passport.js')
 
 //const User = require('../models/User.js');
@@ -16,6 +17,13 @@ checkAuthenticated = (req,res, next) => {
         return next();
     }
     res.redirect('/admin/login');
+}
+
+checkOwner = (req, res, next) => {
+    if(req.user && req.user.status === 'Owner'){
+        return next();
+    }
+    res.status(403).send('Access denied. Owner privileges required.');
 }
 
 /* LOGIN */
@@ -34,7 +42,11 @@ router.get('/login', async (req, res) =>{
 })
 
 
-router.post('/login', passport.authenticate('local', { successRedirect : '/admin/view-orders', failureRedirect : '/admin/login' }), function(req, res, next){
+router.post('/login', passport.authenticate('local', { 
+    successRedirect : '/admin/view-orders', 
+    failureRedirect : '/admin/login',
+    failureFlash: false 
+}), function(req, res, next){
 });
 
 
@@ -457,5 +469,174 @@ router.get('/logout', (req, res, next) => {
         res.redirect('/admin');
     });
 })
+
+/* REGISTRATION */
+router.get('/register', async (req, res) => {
+    res.render('register', {layout: "login.hbs", title: "Register | ESMC", css:"register"});
+});
+
+router.post('/register', async (req, res) => {
+    try {
+        const { name, username, password, securityQuestions, secAns1, secAns2, secAns3 } = req.body;
+
+        // Check if username already exists
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.status(400).json({ error: 'Username already exists' });
+        }
+
+        // Validate security questions
+        if (!securityQuestions || securityQuestions.length !== 3) {
+            return res.status(400).json({ error: 'Please select 3 security questions' });
+        }
+
+        // Get the next userId
+        let newUserId = 1001;
+        try {
+            const lastUser = await User.findOne().sort({ userId: -1 }).exec();
+            newUserId = lastUser ? lastUser.userId + 1 : 1001;
+        } catch (err) {
+            console.error("Error fetching last userId:", err);
+        }
+
+        // Create new user
+        const newUser = new User({
+            userId: newUserId,
+            username,
+            name,
+            password, // In production, this should be hashed
+            status: 'Employee', // Default status
+            securityQuestions,
+            secAns1,
+            secAns2,
+            secAns3,
+            passwordHistory: [],
+            lastChanged: formatDateTime(),
+            failedLoginAttempts: 0,
+            accountLocked: false,
+            loginHistory: []
+        });
+
+        await newUser.save();
+        console.log('User registered:', newUser);
+        res.json({ success: true, message: 'Account created successfully' });
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({ error: 'Server error during registration' });
+    }
+});
+
+/* LOGIN LOGS - Owner Only */
+router.get('/login-logs', checkAuthenticated, checkOwner, async (req, res) => {
+    try {
+        const users = await User.find().select('-password').sort({ lastLoginAttempt: -1 });
+        
+        const totalSuccessful = users.reduce((sum, user) => 
+            sum + (user.loginHistory ? user.loginHistory.length : 0), 0);
+        const totalFailed = users.reduce((sum, user) => 
+            sum + (user.failedLoginAttempts || 0), 0);
+        const lockedAccounts = users.filter(user => user.accountLocked).length;
+        const activeUsers = users.filter(user => 
+            user.loginHistory && user.loginHistory.length > 0).length;
+
+        res.render('login_logs', {
+            layout: "admin.hbs",
+            title: "Login Logs | ESMC",
+            css: "login_logs",
+            users,
+            totalSuccessful,
+            totalFailed,
+            lockedAccounts,
+            activeUsers,
+            helpers: {
+                formatDate: function(date) {
+                    if (!date) return 'N/A';
+                    return new Date(date).toLocaleString();
+                },
+                lastLogin: function(loginHistory) {
+                    if (!loginHistory || loginHistory.length === 0) return null;
+                    return loginHistory[loginHistory.length - 1].timestamp;
+                },
+                lastIP: function(loginHistory) {
+                    if (!loginHistory || loginHistory.length === 0) return 'N/A';
+                    return loginHistory[loginHistory.length - 1].ipAddress;
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching login logs:', error);
+        res.status(500).send('Server Error');
+    }
+});
+
+/* Get login history for specific user */
+router.get('/login-history/:username', checkAuthenticated, checkOwner, async (req, res) => {
+    try {
+        const user = await User.findOne({ username: req.params.username }).select('-password');
+        
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ success: true, user });
+    } catch (error) {
+        console.error('Error fetching login history:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+/* Unlock account - Owner only */
+router.post('/unlock-account', checkAuthenticated, checkOwner, async (req, res) => {
+    try {
+        const { username } = req.body;
+        
+        const result = await User.updateOne(
+            { username },
+            {
+                $set: {
+                    accountLocked: false,
+                    failedLoginAttempts: 0,
+                    lockUntil: null
+                }
+            }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({ error: 'User not found or already unlocked' });
+        }
+
+        res.json({ success: true, message: 'Account unlocked successfully' });
+    } catch (error) {
+        console.error('Error unlocking account:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+/* Export logs - Owner only */
+router.get('/export-logs', checkAuthenticated, checkOwner, async (req, res) => {
+    try {
+        const users = await User.find().select('-password');
+        
+        let csv = 'Username,Name,Status,Failed Attempts,Account Locked,Last Login,IP Address\n';
+        
+        users.forEach(user => {
+            const lastLogin = user.loginHistory && user.loginHistory.length > 0 
+                ? new Date(user.loginHistory[user.loginHistory.length - 1].timestamp).toLocaleString()
+                : 'Never';
+            const lastIP = user.loginHistory && user.loginHistory.length > 0
+                ? user.loginHistory[user.loginHistory.length - 1].ipAddress
+                : 'N/A';
+            
+            csv += `${user.username},${user.name},${user.status},${user.failedLoginAttempts || 0},${user.accountLocked ? 'Yes' : 'No'},${lastLogin},${lastIP}\n`;
+        });
+
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=login_logs.csv');
+        res.send(csv);
+    } catch (error) {
+        console.error('Error exporting logs:', error);
+        res.status(500).send('Server Error');
+    }
+});
 
 module.exports = router;

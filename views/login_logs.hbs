@@ -1,0 +1,248 @@
+<div class="logs-container">
+    <div class="header">
+        <h1>Login Activity Logs</h1>
+        <p class="subtitle">Monitor user authentication and security events</p>
+    </div>
+
+    <div class="filters">
+        <div class="filter-group">
+            <label for="userFilter">Filter by User:</label>
+            <select id="userFilter">
+                <option value="">All Users</option>
+                {{#each users}}
+                <option value="{{this.username}}">{{this.name}} ({{this.username}})</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="statusFilter">Filter by Status:</label>
+            <select id="statusFilter">
+                <option value="">All</option>
+                <option value="success">Successful Logins</option>
+                <option value="failed">Failed Attempts</option>
+                <option value="locked">Locked Accounts</option>
+            </select>
+        </div>
+        <button onclick="applyFilters()" class="filter-btn">Apply Filters</button>
+        <button onclick="exportLogs()" class="export-btn">Export Logs</button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">✓</div>
+            <div class="stat-value">{{totalSuccessful}}</div>
+            <div class="stat-label">Successful Logins</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">✗</div>
+            <div class="stat-value">{{totalFailed}}</div>
+            <div class="stat-label">Failed Attempts</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔒</div>
+            <div class="stat-value">{{lockedAccounts}}</div>
+            <div class="stat-label">Locked Accounts</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value">{{activeUsers}}</div>
+            <div class="stat-label">Active Users</div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="logs-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Username</th>
+                    <th>Status</th>
+                    <th>Failed Attempts</th>
+                    <th>Account Status</th>
+                    <th>Last Login</th>
+                    <th>IP Address</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="logsTableBody">
+                {{#each users}}
+                <tr class="log-row {{#if this.accountLocked}}locked-row{{/if}}" data-username="{{this.username}}">
+                    <td class="user-name">{{this.name}}</td>
+                    <td>{{this.username}}</td>
+                    <td>
+                        <span class="status-badge {{#if this.accountLocked}}status-locked{{else}}status-active{{/if}}">
+                            {{#if this.accountLocked}}Locked{{else}}Active{{/if}}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="attempts-badge {{#if this.failedLoginAttempts}}has-attempts{{/if}}">
+                            {{this.failedLoginAttempts}}
+                        </span>
+                    </td>
+                    <td>
+                        {{#if this.accountLocked}}
+                            <span class="lock-info">Until: {{formatDate this.lockUntil}}</span>
+                        {{else}}
+                            <span class="normal-status">Normal</span>
+                        {{/if}}
+                    </td>
+                    <td>
+                        {{#if this.loginHistory}}
+                            {{formatDate (lastLogin this.loginHistory)}}
+                        {{else}}
+                            Never
+                        {{/if}}
+                    </td>
+                    <td>
+                        {{#if this.loginHistory}}
+                            {{lastIP this.loginHistory}}
+                        {{else}}
+                            N/A
+                        {{/if}}
+                    </td>
+                    <td>
+                        {{#if this.accountLocked}}
+                            <button class="action-btn unlock-btn" onclick="unlockAccount('{{this.username}}')">
+                                Unlock
+                            </button>
+                        {{/if}}
+                        <button class="action-btn view-btn" onclick="viewDetails('{{this.username}}')">
+                            Details
+                        </button>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Details Modal -->
+<div id="detailsModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>User Login History</h2>
+        <div id="modalBody">
+            <!-- Details will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function applyFilters() {
+        const userFilter = document.getElementById('userFilter').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+        const rows = document.querySelectorAll('.log-row');
+
+        rows.forEach(row => {
+            const username = row.dataset.username.toLowerCase();
+            const isLocked = row.classList.contains('locked-row');
+            
+            let showRow = true;
+
+            if (userFilter && !username.includes(userFilter)) {
+                showRow = false;
+            }
+
+            if (statusFilter === 'locked' && !isLocked) {
+                showRow = false;
+            } else if (statusFilter === 'success' && isLocked) {
+                showRow = false;
+            }
+
+            row.style.display = showRow ? '' : 'none';
+        });
+    }
+
+    async function unlockAccount(username) {
+        if (!confirm(`Are you sure you want to unlock the account for ${username}?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/admin/unlock-account', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Account unlocked successfully');
+                location.reload();
+            } else {
+                alert('Failed to unlock account: ' + result.error);
+            }
+        } catch (error) {
+            console.error('Error unlocking account:', error);
+            alert('An error occurred');
+        }
+    }
+
+    async function viewDetails(username) {
+        try {
+            const response = await fetch(`/admin/login-history/${username}`);
+            const data = await response.json();
+
+            if (data.success) {
+                const modalBody = document.getElementById('modalBody');
+                let html = `
+                    <div class="user-details">
+                        <h3>${data.user.name} (${data.user.username})</h3>
+                        <p><strong>Status:</strong> ${data.user.status}</p>
+                        <p><strong>Failed Attempts:</strong> ${data.user.failedLoginAttempts}</p>
+                        <p><strong>Account Locked:</strong> ${data.user.accountLocked ? 'Yes' : 'No'}</p>
+                    </div>
+                    <h4>Login History</h4>
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                if (data.user.loginHistory && data.user.loginHistory.length > 0) {
+                    data.user.loginHistory.slice().reverse().forEach(login => {
+                        html += `
+                            <tr>
+                                <td>${new Date(login.timestamp).toLocaleString()}</td>
+                                <td>${login.ipAddress}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    html += '<tr><td colspan="2">No login history</td></tr>';
+                }
+
+                html += '</tbody></table>';
+                modalBody.innerHTML = html;
+                document.getElementById('detailsModal').style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error fetching details:', error);
+            alert('An error occurred');
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('detailsModal').style.display = 'none';
+    }
+
+    function exportLogs() {
+        window.location.href = '/admin/export-logs';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('detailsModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
