@@ -5,6 +5,7 @@ const User = require('../models/User.js');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 const Sessions = require('../models/Sessions.js');
+const logger = require('../config/logger');
 const { formatDateTime } = require('../middleware/loginSecurity');
 require('../config/passport.js')
 
@@ -16,6 +17,12 @@ checkAuthenticated = (req,res, next) => {
     if(req.user){
         return next();
     }
+    logger.warn({
+        event : 'ACCESS_DENIED',
+        path : rep.originalUrl,
+        ip : rep.ip
+    });
+    
     res.redirect('/admin/login');
 }
 
@@ -236,12 +243,24 @@ router.post('/add-order', checkAuthenticated,    async (req, res) =>{
               transDate, originBranch, destBranch,
               initialCharge, discount, total, 
               status, arrivalDate, updates} = req.body;
+
+        if (!senderName || !receiverName) {
+            logger.warn({
+                event : 'VALIDATION_FAIL',
+                reason: 'Missing sender/receiver name',
+                ip : rep,ip
+            });
+        }
         var intSenderNum = parseInt(senderNum);
         var intReceiverNum = parseInt(receiverNum);
         var floatCharge = parseFloat(initialCharge);
         var floatDiscount = parseFloat(discount);
         var floatTotal = parseFloat(total);
+        // placeholder til may customer accounts na tayo
+        const customerID = String(intSenderNum);            
+        
         var addOrder = new Order({
+            userId : customerId,
             orderId : orderId,
             senderName : senderName,
             receiverName : receiverName,

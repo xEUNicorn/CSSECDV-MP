@@ -17,6 +17,7 @@ const Sessions =  require('./server/models/Sessions.js');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
+const logger = require('./server/config/logger');
 
 const PORT = 3000;
 
@@ -108,6 +109,34 @@ app.use((req, res, next) => {
         css: "error404"
     });
 });
+
+// 404 error handler need 404.hbs
+app.use((req, res) => {                                       
+    logger.warn({                                             
+        event : 'NOT_FOUND',                                  
+        path  : req.originalUrl,                              
+        ip    : req.ip                                        
+    });                                                       
+    res.status(404).render('404', {                           
+        title   : 'Page not found',                           
+        message : 'Sorry, the page you are looking for does not exist.' 
+    });                                                       
+});
+
+// central error handler  
+app.use((err, req, res, next) => {                            
+    logger.error({                                            
+        event   : 'SERVER_ERROR',                             
+        message : err.message,                                
+        stack   : err.stack,                                  
+        path    : req.originalUrl,                            
+        ip      : req.ip                                      
+    });                                                       
+    res.status(500).render('error', {                         
+        title   : 'Something went wrong',                     
+        message : 'An unexpected error occurred. Please try again later.' 
+    });                                                       
+});    
 
 app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}...`);

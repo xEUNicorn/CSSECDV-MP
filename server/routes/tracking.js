@@ -5,20 +5,56 @@ const router = express.Router();
 const Order = require('../models/Order.js');
 const Update = require('../models/Update.js');
 
+const passport = require('passport');
+require('../config/passport');
+const logger = require('../config/logger'); 
+
+router.get('/', (req, res, next) => {
+    if (!req.user) {
+        return res.redirect('/search_parcel/login');
+    }
+    next();   
+});
 
 router.get('/', async (req, res) =>{
     res.render('search_parcel', {title: "Search | ESMC", css:"search_parcel"});
 })
 
+router.get('/login', (req, res) => {
+    if (req.user) {
+        return res.redirect('/admin/view-orders');
+    }
+    res.render('login', {
+        layout : 'login.hbs',
+        title  : 'Login | ESMC',
+        css    : 'login'
+    });
+});
+
+router.post(
+    '/login',
+    passport.authenticate('local', {
+        successRedirect : '/admin/view-orders',
+        failureRedirect : '/search_parcel/login'
+    })
+);
+
 router.post('/', async (req, res) =>{
     try {
         const { id } = req.body;
-        const trackerId = await Order.findOne({ orderId: id });
-        if (trackerId) {
-            res.json({ exists: true });
-        } else {
-            res.json({ exists: false });
-        }
+        if(!req.user) {
+            logger.warn{(
+                event : 'ACCESS_DENIED',
+                path : '/search_parcel',
+                ip : rep.ip
+            });
+            return res.status(401).json({exists:false}); 
+        }  
+        const trackerId = await Order.findOne({
+            orderId : id,
+            userID  : req.user.employeeId            
+        });
+        res.json({ exists: Boolean(trackerId) });
     } catch (error) {
         console.error("Database error:", error);
         res.status(500).json({ exists: false });
@@ -26,10 +62,21 @@ router.post('/', async (req, res) =>{
 })
 
 router.get('/track=:id', async (req, res) =>{
+    if(!req.user) {
+        logger.warn({
+            event: 'ACCESS_DENIED', 
+            path: req.originalUrl, 
+            ip: req.ip 
+        });
+        return res.redirect('/search_parcel/login'); 
+    }
     const id = req.params.id;
     console.log(id);
     try {
-        const order = await Order.findOne({ orderId: id });
+        const order = await Order.findOne({ 
+            orderId : id, 
+            userID : req.user.employeeId
+        });
         if (!order) {
             return res.redirect('/search_parcel');
         }
@@ -45,9 +92,20 @@ router.get('/track=:id', async (req, res) =>{
 })
 
 router.get('/track=:id/more-details', async (req, res) =>{
+    if(!req.user){ 
+        logger.warn({
+            event: 'ACCESS_DENIED', 
+            path: req.originalUrl, 
+            ip: req.ip 
+        });
+        return res.redirect('/search_parcel/login'); 
+    }
     const id = req.params.id;
     try {
-        const order = await Order.findOne({ orderId: id });
+        const order = await Order.findOne({ 
+            orderId: id,
+            userID : req.user.employeeId
+        });
         if (!order) {
             return res.redirect('/search_parcel');
         }
