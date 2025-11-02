@@ -1,34 +1,74 @@
 const sampleUsers = [
     /* 1 */
-    { employeeId: 10001,
-      password: "hello",
-      hubName: "Manila" },
+    {   userId: 100001,
+        username: "@johnniecruz",
+        name: "John Cruz",
+        password: "String", //dapat hashed but for now no (TODO BY JOODIE)
+        status: "Customer",
+        securityQuestions: [1, 2, 3],
+        secAns1: "Johnny Jr.",  // First Pet's Name
+        secAns2: "Dela",        // Mother's maiden name
+        secAns3: "Johnnie",     // Childhood Nickname
+        passwordHistory: [],
+        lastChanged: "11-01-2025 12:39:01 pm" },
 
     /* 2 */
-    { employeeId: 10002,
-        password: "sample",
-        hubName: "Romblon" },
+    {   userId: 100002,
+        username: "Juannn",
+        name: "Juan Perez",
+        password: "String", //dapat hashed but for now no (TODO BY JOODIE)
+        status: "Customer",
+        securityQuestions: [2, 3, 4],
+        secAns1: "Torrez",      // Mother's maiden name
+        secAns2: "The One",     // Childhood Nickname
+        secAns3: "International School",     // Name of the first school you attended
+        passwordHistory: [],
+        lastChanged: "11-01-2025 12:49:01 pm" },
 
     /* 3 */
-    { employeeId: 10003,
-        password: "pass",
-        hubName: "Magdiwang" },
+    {   userId: 100003,
+        username: "Josephbro",
+        name: "Joseph Santos",
+        password: "String", //dapat hashed but for now no (TODO BY JOODIE)
+        status: "Customer",
+        securityQuestions: [3, 4, 5],
+        secAns1: "Jojo",      // Childhood Nickname
+        secAns2: "International School",     // Name of the first school you attended
+        secAns3: "Superman",     // Favorite fictional character
+        passwordHistory: [],
+        lastChanged: "11-01-2025 01:08:04 pm" },
 
     /* 4 */
-    { employeeId: 10004,
-        password: "four",
-        hubName: "Cajidiocan" },
+    {   userId: 100004,
+        username: "JuanitaGirlie",
+        name: "Juanita Abagnale",
+        password: "String", //dapat hashed but for now no (TODO BY JOODIE)
+        status: "Customer",
+        securityQuestions: [3, 1, 5],
+        secAns1: "Gurl",      // Childhood Nickname
+        secAns2: "Mao Mao The First Princess",     // First Pet's Name
+        secAns3: "Sofia",     // Favorite fictional character
+        passwordHistory: [],
+        lastChanged: "11-01-2025 01:02:04 pm" },
 
     /* 5 */
-    { employeeId: 10005,
-        password: "last",
-        hubName: "San Fernando" },
+    {   userId: 100005,
+        username: "Manila Branch",
+        name: "Man ila",
+        password: "employee", //dapat hashed but for now no (TODO BY JOODIE)
+        status: "Employee",
+        securityQuestions: [3, 4, 5],
+        secAns1: "ESMC",      // Childhood Nickname
+        secAns2: "ESMC School",     // Name of the first school you attended
+        secAns3: "ESMC",     // Favorite fictional character
+        passwordHistory: [],
+        lastChanged: "11-01-2025 01:10:04 pm" },
 ];
 
 const sampleOrders = [
     /* 1 */
     {   orderId : "FRI12345",
-        senderName : "John Dela Cruz",
+        senderName : "John Cruz",
         receiverName : "Juan Perez",
         senderNum : 9121231234,
         receiverNum : 9121234567,
@@ -79,8 +119,8 @@ const sampleOrders = [
 
     /* 3 */
     {   orderId : "THU11111",
-        senderName : "Juan Dela Cruz",
-        receiverName : "Juanita",
+        senderName : "John Cruz",
+        receiverName : "Juanita Abagnale",
         senderNum : 9129874567,
         receiverNum : 9123331122,
 
