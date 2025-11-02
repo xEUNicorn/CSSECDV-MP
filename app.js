@@ -99,6 +99,7 @@ app.use(passport.session());
 app.use('/', require('./server/routes/main.js'));
 app.use('/search_parcel', require('./server/routes/tracking.js'));
 app.use('/admin', require('./server/routes/admin.js'));
+app.use('/create_account', require('./server/routes/account.js')); // path for creating accounts
 app.use('/password', require('./server/routes/password.js'));
 
 // 404 Error Handler - Must be last
