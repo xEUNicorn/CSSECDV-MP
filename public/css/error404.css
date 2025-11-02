@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #fffaeb 0%, #fff5d6 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.error-container {
+    width: 100%;
+    max-width: 800px;
+    padding: 40px 20px;
+}
+
+.error-content {
+    background: white;
+    border-radius: 20px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(114, 1, 16, 0.1);
+}
+
+.error-code {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-size: 150px;
+    font-weight: 900;
+    color: #720110;
+    line-height: 1;
+    margin-bottom: 20px;
+    text-shadow: 4px 4px 0px rgba(114, 1, 16, 0.1);
+}
+
+.error-message h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 36px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.error-message p {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.error-detail {
+    font-size: 16px;
+    color: #999;
+    margin-bottom: 30px;
+}
+
+.error-illustration {
+    margin: 40px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.error-illustration svg {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.error-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-block;
+    padding: 14px 32px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.btn-primary {
+    background-color: #720110;
+    color: white;
+    box-shadow: 0 4px 15px rgba(114, 1, 16, 0.3);
+}
+
+.btn-primary:hover {
+    background-color: #8a0113;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(114, 1, 16, 0.4);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: #720110;
+    border: 2px solid #720110;
+}
+
+.btn-secondary:hover {
+    background-color: #720110;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.error-help {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.error-help p {
+    font-size: 14px;
+    color: #666;
+}
+
+.error-help a {
+    color: #720110;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.error-help a:hover {
+    color: #8a0113;
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .error-code {
+        font-size: 100px;
+    }
+
+    .error-message h1 {
+        font-size: 28px;
+    }
+
+    .error-message p {
+        font-size: 16px;
+    }
+
+    .error-content {
+        padding: 40px 20px;
+    }
+
+    .error-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
