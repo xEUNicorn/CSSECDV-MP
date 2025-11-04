@@ -10,12 +10,26 @@ const UserSchema = new mongoose.Schema({
         enum: ["Customer", "Employee", "Owner"],
         default: "Customer",
     },
-    securityQuestions: [],     // to be filled out by the code (Ex: ["1","2","4"])
-    secAns1: String,           // First pet's name (Sample)
-    secAns2: String,           // Mother's maiden name (Sample)
-    secAns3: String,           // Childhood Nickname (Sample)
-    passwordHistory: [],
-    lastChanged: String,        //format: mm-dd-yyyy hh:mm:ss am/pm
+    securityQuestions: [],     // to be filled out by the code (Ex: [1,2,4])
+    secAns1: String,           // Security answer 1
+    secAns2: String,           // Security answer 2
+    secAns3: String,           // Security answer 3
+    passwordHistory: [],       // Array of previous passwords
+    lastChanged: String,       // format: mm-dd-yyyy hh:mm:ss am/pm
+    failedLoginAttempts: {
+        type: Number,
+        default: 0
+    },
+    accountLocked: {
+        type: Boolean,
+        default: false
+    },
+    lockUntil: Date,           // When the account will be unlocked
+    lastLoginAttempt: Date,    // Track last login attempt
+    loginHistory: [{           // Track successful logins
+        timestamp: Date,
+        ipAddress: String
+    }]
 })
 
 const User = mongoose.model('User', UserSchema)

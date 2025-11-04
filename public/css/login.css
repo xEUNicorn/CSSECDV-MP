@@ -22,7 +22,7 @@ body {
 
 #left-box {
 	text-align: center;
-	background-color: #fc0404;
+	background-color: #720110;
 	background-image: url(/img/truck.svg);
     background-repeat: no-repeat;
     background-position: center center;
@@ -47,7 +47,7 @@ p {
 	margin-top: 5vh;
 }
 #right-bg {
-	background-color: #fc0404;
+	background-color: #720110;
 	width: 50vw;
 	height: 100vh;
 }
@@ -106,7 +106,7 @@ button {
 	width: 144px;
 	border: solid;
 	border-color: #ffffff;
-	background-color: #fc0404;
+	background-color: #720110;
 	color: #ffffff;
 	font-family: 'Arial';
 	font-size: 16px;
@@ -115,7 +115,8 @@ button {
 h6, a {
 	font-family: "Jost";
 	font-weight: 300;
-	color: #fc0404;
+	color: #720110;
+	text-decoration: underline;
 	font-size: 14px;
 	margin-top: 15px;
 	margin-bottom: 0;
@@ -164,13 +165,13 @@ h2 {
 }
 #popup-msg {
     font-family: "Jost";
-    color: #fc0404;
+    color: #720110;
 	font-weight: bold;
 }
 #login-link {
 	text-decoration: none;
-	color: #fc0404;
+	color: #720110;
 }
 #login-link:visited{
-	color: #fc0404;
+	color: #720110;
 }
