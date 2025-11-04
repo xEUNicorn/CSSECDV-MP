@@ -24,15 +24,21 @@ const verifyCallback = async (req, username, password, done) => {
             console.log("no user!");
             return done(null, false, { message: 'Invalid username or password' });
         }
+        
+        bcrypt.compare(password, user.password, (err, result) => {
+            if (err) {
+                console.error('Error comparing passwords:', err);
+                return;
+            }
 
-        if (user.password === password) {
-            console.log("found!");
+        if (result) {
+            console.log('Passwords match! User authenticated.');
             // Record successful login
             const ipAddress = req.ip || req.connection.remoteAddress;
             await recordSuccessfulLogin(username, ipAddress);
             return done(null, user);
         } else {
-            console.log("not found!");
+            console.log('Passwords do not match! Authentication failed.');
             // Record failed login attempt
             const failInfo = await recordFailedLogin(username);
             if (failInfo && failInfo.locked) {
@@ -44,6 +50,8 @@ const verifyCallback = async (req, username, password, done) => {
                 message: `Invalid username or password. ${failInfo ? failInfo.remaining : ''} attempts remaining.` 
             });
         }
+        });
+
     } catch (err) {
         console.error("Authentication error:", err);
         done(err);

@@ -3,12 +3,12 @@ const sampleUsers = [
     {   userId: 100001,
         username: "@johnniecruz",
         name: "John Cruz",
-        password: "String", //dapat hashed but for now no (TODO BY JOODIE)
+        password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu", //String
         status: "Customer",
-        securityQuestions: [1, 2, 3],
-        secAns1: "Johnny Jr.",  // First Pet's Name
-        secAns2: "Dela",        // Mother's maiden name
-        secAns3: "Johnnie",     // Childhood Nickname
+        securityQuestions: ["1", "2", "3"],
+        secAns1: "$2a$12$VLz86PY4A2uU/Z2Ka/rJNe13TUnNF7mjWr3ccOQVw4BWh5F62h9N2",     // Johnny Jr. - First Pet's Name
+        secAns2: "$2a$12$G9BUqu0xTRnCFahqlhjhxOImK5dekRAtwo1MPGZanROxbsInmfL.C",     // Dela - Mother's maiden name
+        secAns3: "$2a$12$2kL.QjmB6E9T8FgLBaFfiehLGoCAm.gokEOWFnvZreJMC1hnZn/vK",     // Johnnie - Childhood Nickname
         passwordHistory: [],
         lastChanged: "11-01-2025 12:39:01 pm" },
 
@@ -16,12 +16,12 @@ const sampleUsers = [
     {   userId: 100002,
         username: "Juannn",
         name: "Juan Perez",
-        password: "String", //dapat hashed but for now no (TODO BY JOODIE)
+        password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu", //String
         status: "Customer",
-        securityQuestions: [2, 3, 4],
-        secAns1: "Torrez",      // Mother's maiden name
-        secAns2: "The One",     // Childhood Nickname
-        secAns3: "International School",     // Name of the first school you attended
+        securityQuestions: ["2", "3", "4"],
+        secAns1: "$2a$12$WnMSrE7b1VHlAxEpW7HZgu5irZTik.w1Y5ASA82kQqtjtND1Kc45C",     // Torrez - Mother's maiden name
+        secAns2: "$2a$12$QV.AhiLWQx9.4YFjGjGFWOgC67m8hiwt5zan5NPFnTyzdfSExMeNy",     // The One - Childhood Nickname
+        secAns3: "$2a$12$/mY4dor6FrS.cY.I1nsd9.Gtr5VCDcJ/gPttQTEozmXzqlhf41dOC",     // International School - Name of the first school you attended
         passwordHistory: [],
         lastChanged: "11-01-2025 12:49:01 pm" },
 
@@ -29,12 +29,12 @@ const sampleUsers = [
     {   userId: 100003,
         username: "Josephbro",
         name: "Joseph Santos",
-        password: "String", //dapat hashed but for now no (TODO BY JOODIE)
+        password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu", //String
         status: "Customer",
-        securityQuestions: [3, 4, 5],
-        secAns1: "Jojo",      // Childhood Nickname
-        secAns2: "International School",     // Name of the first school you attended
-        secAns3: "Superman",     // Favorite fictional character
+        securityQuestions: ["3", "4", "5"],
+        secAns1: "$2a$12$0z8DEzEk2uEhsnN1FAAmP.uKtPUyZWLUUcSI3031TE9MOUWMvH/O2",     // Jojo - Childhood Nickname
+        secAns2: "$2a$12$222iGklD8D3WlGeMYFaCWOJddz7DXluDd9iQPRl7XnxaPdcDsumeS",     // International School - Name of the first school you attended
+        secAns3: "$2a$12$eL0wk88U4hzdYBgNK6Yj5elTdFywsIvqKHxvQ37T3XPngfiFtSlzG",     // Superman - Favorite fictional character
         passwordHistory: [],
         lastChanged: "11-01-2025 01:08:04 pm" },
 
@@ -42,12 +42,12 @@ const sampleUsers = [
     {   userId: 100004,
         username: "JuanitaGirlie",
         name: "Juanita Abagnale",
-        password: "String", //dapat hashed but for now no (TODO BY JOODIE)
+        password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu",
         status: "Customer",
-        securityQuestions: [3, 1, 5],
-        secAns1: "Gurl",      // Childhood Nickname
-        secAns2: "Mao Mao The First Princess",     // First Pet's Name
-        secAns3: "Sofia",     // Favorite fictional character
+        securityQuestions: ["3", "1", "5"],
+        secAns1: "$2a$12$/1ySL6y7.89RcF5cZk0bGurCcEEdI2CiKLzv4gel8/IGUsVim0MJG",     // Gurl - Childhood Nickname
+        secAns2: "$2a$12$drF15s0.FRk48KqEh0Q73Omf7s3aukeVHQweImh04xylc6/Ux3wQO",     // Mao Mao The First Princess - First Pet's Name
+        secAns3: "$2a$12$V.kv1KExhLTj65hLuWg0SeJ/J2CxC3A/yFwp8PZm/vZlrps6qfyqi",     // Sofia - Favorite fictional character
         passwordHistory: [],
         lastChanged: "11-01-2025 01:02:04 pm" },
 
@@ -55,12 +55,25 @@ const sampleUsers = [
     {   userId: 100005,
         username: "Manila Branch",
         name: "Man ila",
-        password: "employee", //dapat hashed but for now no (TODO BY JOODIE)
+        password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu",
         status: "Employee",
-        securityQuestions: [3, 4, 5],
-        secAns1: "ESMC",      // Childhood Nickname
-        secAns2: "ESMC School",     // Name of the first school you attended
-        secAns3: "ESMC",     // Favorite fictional character
+        securityQuestions: ["3", "4", "5"],
+        secAns1: "$2a$12$cMdIlv4NWsCFieocaX6HZeGVM4uIP0Mga4XzMe/ILyF6rmCmJowc.",     // ESMC - Childhood Nickname
+        secAns2: "$2a$12$XU54Dkc1rImMoIqULQzbAesThsJb2UsWe.amqsXqHHoRjSNN1qV2i",     // ESMC School - Name of the first school you attended
+        secAns3: "$2a$12$cMdIlv4NWsCFieocaX6HZeGVM4uIP0Mga4XzMe/ILyF6rmCmJowc.",     // ESMC - Favorite fictional character
+        passwordHistory: [],
+        lastChanged: "11-01-2025 01:10:04 pm" },
+
+    /* 6 */
+    {   userId: 100006,
+        username: "realtester",
+        name: "Real Tester",
+        password: "$2b$12$o1g4ALYtWGnBzCTTyys/5uxBxrlEI7FncZ5PAzNd1cVz/Tg6hmmR.", //Sample100!
+        status: "Customer",
+        securityQuestions: ["1", "3", "5"],
+        secAns1: "$2b$12$kU/p.FXg5pidk2rRntF3zeX7tfT91dtYowRebHSN77FEBZS7N6Myi", // Doggie - First Pet's Name
+        secAns2: "$2b$12$Z6qbUY/48SUg/xHCVlN7heyUQbA6ke4wo7bleDIh4bOtEEenVOF6u", // EJ - Childhood Nickname
+        secAns3: "$2b$12$iFZN1/dWlkUMp4znf6EK5.5K8Pyduts.WsgCoQJ8dYNFZIF6jHZcm", // Me - Favorite fictional character
         passwordHistory: [],
         lastChanged: "11-01-2025 01:10:04 pm" },
 ];

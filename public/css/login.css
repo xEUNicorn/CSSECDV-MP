@@ -112,7 +112,7 @@ button {
 	font-size: 16px;
 	box-shadow: 5px 5px 5px -5px rgba(0, 0, 0, 0.5);
 }
-h6 {
+h6, a {
 	font-family: "Jost";
 	font-weight: 300;
 	color: #720110;
@@ -124,9 +124,22 @@ h6 {
 	width:max-content;
 }
 
+a {
+	text-decoration: none;
+}
+
+h6:hover, a:hover {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
 .forgot-container{
 	display:flex;
 	justify-content: center;
+}
+
+.forgot-container h6 {
+	margin: 20px 10px;
 }
 
 #popup {
