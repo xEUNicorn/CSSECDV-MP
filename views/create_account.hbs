@@ -68,17 +68,6 @@
     </div>
 </div>
 
-{{!-- error popup --}}
-<div id="order-popup" style="display: none;">
-    <h1 id="error-title">INVALID / MISSING INPUTS</h1>
-    <input type="hidden" id="hidden-orderid">
-    <table class="popup-table">
-        <!--<tr class="popup-tr"></tr>-->
-    </table>
-    <button id="close-error-btn">OKAY</button>
-</div>
-{{!-- until here --}}
-
 <div class="flex-parent" id="security-questions" style="display: none;">
     <div id="left-bg2">
         <div id="left-box2">
@@ -134,11 +123,22 @@
                         <br>
                     </div>
                 </div>
-                <button id="submit-account-btn" type="submit" style="cursor:pointer">Done</button>
+                <button id="register-account-button" type="submit" style="cursor:pointer">Done</button>
             </div>
         </div>
     </div>
 </div>
+
+{{!-- error popup --}}
+<div id="order-popup" style="display: none;">
+    <h1 id="error-title">INVALID / MISSING INPUTS</h1>
+    <input type="hidden" id="hidden-orderid">
+    <table class="popup-table">
+        <!--<tr class="popup-tr"></tr>-->
+    </table>
+    <button id="close-error-btn">OKAY</button>
+</div>
+{{!-- until here --}}
 
 <script>
     const passwordField = document.getElementById("pass");

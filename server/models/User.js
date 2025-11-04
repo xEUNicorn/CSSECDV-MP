@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema({
         enum: ["Customer", "Employee", "Owner"],
         default: "Customer",
     },
-    securityQuestions: [],     // to be filled out by the code (Ex: [1,2,4])
+    securityQuestions: [],     // to be filled out by the code (Ex: ["1","2","4"])
     secAns1: String,           // First pet's name (Sample)
     secAns2: String,           // Mother's maiden name (Sample)
     secAns3: String,           // Childhood Nickname (Sample)

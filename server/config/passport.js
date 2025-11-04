@@ -13,13 +13,21 @@ const verifyCallback = (req, username, password, done) => {
                 return done(null, false) 
             }
 
-            if(user.password === password){
-                console.log("found!")
+            bcrypt.compare(password, user.password, (err, result) => {
+                if (err) {
+                    console.error('Error comparing passwords:', err);
+                    return;
+                }
+
+            if (result) {
+                console.log('Passwords match! User authenticated.');
                 return done(null, user);
             } else {
-                console.log("not found!")
+                console.log('Passwords do not match! Authentication failed.');
                 return done(null, false);
             }
+            });
+
         })
         .catch((err) => {   
             done(err);

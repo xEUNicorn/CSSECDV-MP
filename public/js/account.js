@@ -4,7 +4,7 @@
 $(document).ready(function() {
     $('#create-account-btn').click(async function(e) {
         e.preventDefault();
-        if (checkInputs()) {
+        if (await checkInputs()) {
             $('#security-questions').show();
             // makes the webpage automatically scroll down so the user can see additional questions
             $('html, body').animate({
@@ -23,7 +23,7 @@ $(document).ready(function() {
         $('#order-popup').fadeOut(300);
     });
 
-    $('#submit-account-btn').click(async function(e) {
+    $('#register-account-button').click(async function(e) {
         e.preventDefault();
         if (checkSecurityInputs()) {
             await addToDatabase();
@@ -58,7 +58,7 @@ $(document).ready(function() {
 /*  validates all inputs for creating an account by the user
     returns true if it is VALID; otherwise, false
 */
-function checkInputs() {
+async function checkInputs() {
     const username = $('#username').val();
     const firstname = $('#firstname').val();
     const lastname = $('#lastname').val();
@@ -67,13 +67,13 @@ function checkInputs() {
     const retype = $('#retype-pass').val();
 
     var check = true; //check if all inputs are valid or not
+    var userInfo = { username: username }
 
-    $.post('/unique-username', username, function(message, status) {
-        if (message.exists) {
-            check = false;
-            addError("Username ALREADY EXISTS!");
-        }
-    });
+    try {
+        check = await checkUsername(userInfo);
+    } catch (error) {
+        console.error("Error in checking username:", error);
+    }
 
     if (firstname.trim() === "") {
         check = false;
@@ -85,7 +85,9 @@ function checkInputs() {
         addError("Last Name is EMPTY!");
     }
 
-    check = validatePassword(true);
+    if (!validatePassword(true)) {
+        check = false;
+    }
 
     if (password !== retype) {
         check = false;
@@ -93,6 +95,25 @@ function checkInputs() {
     }
 
     return check;
+}
+
+/*  checks if the username exists to the database
+*/
+function checkUsername(userInfo) {
+    return $.post('/create_account/unique-username', userInfo)
+        .then(response => {
+            if (response.exists) {
+                addError("Username ALREADY EXISTS!");
+                return false; //return false since it already exists so there is error
+            }
+            else {
+                return true;
+            }
+        })
+        .catch(errorMsg => {
+            console.error(errorMsg);
+            return 0;
+        })
 }
 
 /*  Checks current password of the user if it matches the rules set
@@ -254,6 +275,53 @@ function disableChanges() {
     $('#retype-pass').prop('disabled', true);
 }
 
+/*  validates all inputs for creating an account by the user
+    returns true if it is VALID; otherwise, false
+*/
+function checkSecurityInputs() {
+    const secQ1 = $('#question1').val();
+    const secQ2 = $('#question2').val();
+    const secQ3 = $('#question3').val();
+
+    const ans1 = $('#answer1').val();
+    const ans2 = $('#answer2').val();
+    const ans3 = $('#answer3').val();
+
+    var check = true;
+
+    if (secQ1 === "") {
+        check = false;
+        addError("Pick a Question for Security Question 1");
+    }
+
+    if (ans1.trim() === "") {
+        check = false;
+        addError("Security Answer for Question 1 is EMPTY!");
+    }
+
+    if (secQ2 === "") {
+        check = false;
+        addError("Pick a Question for Security Question 2");
+    }
+
+    if (ans2.trim() === "") {
+        check = false;
+        addError("Security Answer for Question 2 is EMPTY!");
+    }
+
+    if (secQ3 === "") {
+        check = false;
+        addError("Pick a Question for Security Question 3");
+    }
+
+    if (ans3.trim() === "") {
+        check = false;
+        addError("Security Answer for Question 3 is EMPTY!");
+    }
+
+    return check;
+}
+
 /*  adds all information needed to create an account and saves it to the database
 */
 async function addToDatabase() {
@@ -265,25 +333,27 @@ async function addToDatabase() {
         const password = $('#pass').val();
 
         const name = firstname + " " + lastname;
-        
 
+        const secQ1 = parseInt($('#question1').val());
+        const secQ2 = parseInt($('#question2').val());
+        const secQ3 = parseInt($('#question3').val());
+
+        const ans1 = $('#answer1').val();
+        const ans2 = $('#answer2').val();
+        const ans3 = $('#answer3').val();
+        
         var orderData = {
             userId: userId,
             username: username,
-            name: name,             // First Name, Last Name (Format)
+            name: name,  // First Name Last Name (Format)
             password: password,
-            status: "Customer",
-            securityQuestions: [], // to be filled out by the code (Ex: [1,2,4,5,7])
-            secAns1: "N/A",
-            secAns2: "N/A",
-            secAns3: "N/A",
-            secAns4: "N/A",
-            secAns5: "N/A",
-            passwordHistory: [],
-            lastChanged: "N/A",        //format: mm-dd-yyyy hh:mm:ss am/pm
+            securityQuestions: [secQ1, secQ2, secQ3], // Ex: ["1","2","4"]
+            secAns1: ans1,
+            secAns2: ans2,
+            secAns3: ans3,
         };
 
-        $.post('/create_account/initial-user', orderData, function(message, status) {
+        $.post('/create_account/register', orderData, function(message, status) {
             console.log("response data: ", message, status);
             if (message.success) {
                 setTimeout(function() {
@@ -298,6 +368,8 @@ async function addToDatabase() {
     }
 }
 
+/*  generate user ID and ask database for the last user ID as its basis
+*/
 function generateUserID() {
     return $.post('/create_account/generate')
         .then(response => {
@@ -310,4 +382,20 @@ function generateUserID() {
             console.error(errorMsg);
             return 0;
         })
+}
+
+function clear() {
+    $('#username').val();
+    $('#firstname').val('');
+    $('#lastname').val('');
+
+    $('#pass').val('');
+    $('#retype-pass').val('');
+
+    $('#question1').val('');
+    $('#answer1').val('');
+    $('#question2').val('');
+    $('#answer2').val('');
+    $('#question3').val('');
+    $('#answer3').val('');
 }

@@ -112,7 +112,7 @@ button {
 	font-size: 16px;
 	box-shadow: 5px 5px 5px -5px rgba(0, 0, 0, 0.5);
 }
-h6 {
+h6, a {
 	font-family: "Jost";
 	font-weight: 300;
 	color: #fc0404;
@@ -123,7 +123,11 @@ h6 {
 	width:max-content;
 }
 
-h6:hover {
+a {
+	text-decoration: none;
+}
+
+h6:hover, a:hover {
 	font-weight: bold;
 	text-decoration: underline;
 }
