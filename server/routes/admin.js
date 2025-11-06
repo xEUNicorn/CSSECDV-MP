@@ -241,7 +241,13 @@ router.post('/add-order', checkAuthenticated,    async (req, res) =>{
         var floatCharge = parseFloat(initialCharge);
         var floatDiscount = parseFloat(discount);
         var floatTotal = parseFloat(total);
+
+        const sender = intSenderNum;
+        const receiver = intReceiverNum;
+        
         var addOrder = new Order({
+            senderId : sender,
+            receiverId : receiver,
             orderId : orderId,
             senderName : senderName,
             receiverName : receiverName,
