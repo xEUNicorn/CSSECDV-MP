@@ -12,6 +12,7 @@ const { sampleUsers, sampleOrders, sampleUpdates } = require('./server/sample');
 const User = require('./server/models/User');
 const Order = require('./server/models/Order');
 const Update = require('./server/models/Update');
+const Logs = require('./server/models/Logs');               //in case need to add samples
 
 const Sessions =  require('./server/models/Sessions.js');
 const session = require('express-session');
@@ -32,6 +33,8 @@ async function createSample() {
     await User.insertMany(sampleUsers);
     await Order.insertMany(sampleOrders);
     await Update.insertMany(sampleUpdates);
+
+    //can add samples here
 
     /*          //for deployment
     const existingUsers = await User.countDocuments();
@@ -100,6 +103,7 @@ app.use('/', require('./server/routes/main.js'));
 app.use('/search_parcel', require('./server/routes/tracking.js'));
 app.use('/admin', require('./server/routes/admin.js'));
 app.use('/password', require('./server/routes/password.js'));
+app.use('/logs', require('./server/routes/logs.js'));
 
 // 404 Error Handler - Must be last
 app.use((req, res, next) => {
