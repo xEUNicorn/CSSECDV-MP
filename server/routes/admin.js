@@ -5,7 +5,6 @@ const User = require('../models/User.js');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 const Sessions = require('../models/Sessions.js');
-const { formatDateTime } = require('../middleware/loginSecurity');
 require('../config/passport.js')
 
 //const User = require('../models/User.js');
@@ -17,6 +16,13 @@ checkAuthenticated = (req,res, next) => {
         return next();
     }
     res.redirect('/admin/login');
+}
+
+checkEmployee = (req, res, next) => {
+    if(req.user && req.user.status === 'Employee'){
+        return next();
+    }
+    res.status(403).send('Access denied');
 }
 
 checkOwner = (req, res, next) => {
@@ -54,7 +60,7 @@ router.post('/login', passport.authenticate('local', {
 
 
 /* SUMMARY OF ORDERS */
-router.get('/view-orders', checkAuthenticated, async (req, res) =>{
+router.get('/view-orders', checkAuthenticated, checkEmployee, async (req, res) =>{
     try {
         const orders = await Order.find();
         res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders });
@@ -66,7 +72,7 @@ router.get('/view-orders', checkAuthenticated, async (req, res) =>{
     }
 })
 
-router.post('/view-orders/more-details', checkAuthenticated, async (req, res) => {
+router.post('/view-orders/more-details', checkAuthenticated, checkEmployee, async (req, res) => {
     try {
         const { id } = req.body
         const orderDetails = await Order.findOne({ orderId: id });
@@ -91,7 +97,7 @@ router.post('/view-orders/more-details', checkAuthenticated, async (req, res) =>
     }
 })
 
-router.get('/view-orders/control-id', checkAuthenticated, async (req, res) => {
+router.get('/view-orders/control-id', checkAuthenticated, checkEmployee, async (req, res) => {
     try {
         const controlId = (req.query.controlId).toUpperCase();
         const orders = await Order.find({ "orderId": {$regex : controlId} });
@@ -103,7 +109,7 @@ router.get('/view-orders/control-id', checkAuthenticated, async (req, res) => {
     }
 });
 
-router.get('/view-orders/hub-to-hub', checkAuthenticated, async (req, res) => {
+router.get('/view-orders/hub-to-hub', checkAuthenticated, checkEmployee, async (req, res) => {
     try {
         const originSearch = req.query.originSearch;
         const destSearch = req.query.destSearch;
@@ -119,7 +125,7 @@ router.get('/view-orders/hub-to-hub', checkAuthenticated, async (req, res) => {
     }
 });
 
-router.get('/view-orders/daily-net', checkAuthenticated, async (req, res) => {
+router.get('/view-orders/daily-net', checkAuthenticated, checkEmployee, async (req, res) => {
     try {
         var tempDaySearch = req.query.daySearch;
         var year = '-' + tempDaySearch.substr(0, 4);
@@ -155,7 +161,7 @@ router.get('/view-orders/daily-net', checkAuthenticated, async (req, res) => {
     }
 });
 
-router.get('/view-orders/monthly-net', checkAuthenticated, async (req, res) => {
+router.get('/view-orders/monthly-net', checkAuthenticated, checkEmployee, async (req, res) => {
     try {
         var monthSearch = req.query.monthSearch;
         const month = monthSearch.substr(5, 7) + '-';
@@ -192,7 +198,7 @@ router.get('/view-orders/monthly-net', checkAuthenticated, async (req, res) => {
     }
 });
 
-router.get('/view-orders/annual-net', checkAuthenticated, async (req, res) => {
+router.get('/view-orders/annual-net', checkAuthenticated, checkEmployee, async (req, res) => {
     try {
         const yearSearch = req.query.yearSearch;
         const orders = await Order.find({
@@ -225,11 +231,11 @@ router.get('/view-orders/annual-net', checkAuthenticated, async (req, res) => {
 /* === */
 
 /* ADD ORDER */
-router.get('/create-order', checkAuthenticated, checkAuthenticated, async (req, res) =>{
+router.get('/create-order', checkAuthenticated, checkAuthenticated, checkEmployee, async (req, res) =>{
     res.render('order_form', {layout: "admin.hbs", title: "Order Form", css:"order_form"});
 })
 
-router.post('/add-order', checkAuthenticated,    async (req, res) =>{
+router.post('/add-order', checkAuthenticated, checkEmployee, async (req, res) =>{
     try {
         var { orderId, senderName, receiverName, senderNum, receiverNum,
               itemNum, itemDesc, itemPrice, 
@@ -282,7 +288,7 @@ router.post('/add-order', checkAuthenticated,    async (req, res) =>{
     
 })
 
-router.post('/validate', async (req, res) => {
+router.post('/validate', checkAuthenticated, checkEmployee, async (req, res) => {
     try {
         const { prefix } = req.body; // first three characters
         console.log("PREFIX", prefix);
@@ -302,7 +308,7 @@ router.post('/validate', async (req, res) => {
 /* === */
 
 /* EDIT ORDERS */
-router.get('/edit-order/:orderId', async (req, res) =>{
+router.get('/edit-order/:orderId', checkAuthenticated, checkEmployee, async (req, res) =>{
     const order = req.params.orderId;
     const specificOrder = await Order.findOne({ orderId: order});
 
@@ -356,7 +362,7 @@ router.get('/edit-order/:orderId', async (req, res) =>{
                                orderDetails: orderDetails});
 })
 
-router.post('/edit-order', async (req, res) =>{
+router.post('/edit-order', checkAuthenticated, checkEmployee, async (req, res) =>{
     try {
         var { orderId, senderName, receiverName, senderNum, receiverNum,
                 itemNum, itemDesc, itemPrice, 
@@ -402,7 +408,7 @@ router.post('/edit-order', async (req, res) =>{
 /* === */
 
 /* UPDATE ORDERS */
-router.post('/update-order', checkAuthenticated, checkAuthenticated, async (req, res) => {
+router.post('/update-order', checkAuthenticated, checkAuthenticated, checkEmployee, async (req, res) => {
     try {
         var { id, newStatus, newEDA, newDate, newTime, statusDesc } = req.body;
         
@@ -451,7 +457,7 @@ router.post('/update-order', checkAuthenticated, checkAuthenticated, async (req,
 /* === */
 
 /* DELETE ORDERS */
-router.post('/delete-order', checkAuthenticated, checkAuthenticated, async (req, res) => {
+router.post('/delete-order', checkAuthenticated, checkAuthenticated, checkEmployee, async (req, res) => {
     try {
         var { id } = req.body;
         const order = await Order.findOne({ orderId: id });
@@ -469,68 +475,13 @@ router.post('/delete-order', checkAuthenticated, checkAuthenticated, async (req,
 })
 /* === */
 
-router.get('/logout', (req, res, next) => {
+router.get('/logout', checkAuthenticated, checkEmployee, (req, res, next) => {
     req.logout((err)=> {
         if (err) {return next(err)};
         res.redirect('/admin');
     });
 })
 
-/* REGISTRATION */
-router.get('/register', async (req, res) => {
-    res.render('register', {layout: "login.hbs", title: "Register | ESMC", css:"register"});
-});
-
-router.post('/register', async (req, res) => {
-    try {
-        const { name, username, password, securityQuestions, secAns1, secAns2, secAns3 } = req.body;
-
-        // Check if username already exists
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            return res.status(400).json({ error: 'Username already exists' });
-        }
-
-        // Validate security questions
-        if (!securityQuestions || securityQuestions.length !== 3) {
-            return res.status(400).json({ error: 'Please select 3 security questions' });
-        }
-
-        // Get the next userId
-        let newUserId = 1001;
-        try {
-            const lastUser = await User.findOne().sort({ userId: -1 }).exec();
-            newUserId = lastUser ? lastUser.userId + 1 : 1001;
-        } catch (err) {
-            console.error("Error fetching last userId:", err);
-        }
-
-        // Create new user
-        const newUser = new User({
-            userId: newUserId,
-            username,
-            name,
-            password, // In production, this should be hashed
-            status: 'Employee', // Default status
-            securityQuestions,
-            secAns1,
-            secAns2,
-            secAns3,
-            passwordHistory: [],
-            lastChanged: formatDateTime(),
-            failedLoginAttempts: 0,
-            accountLocked: false,
-            loginHistory: []
-        });
-
-        await newUser.save();
-        console.log('User registered:', newUser);
-        res.json({ success: true, message: 'Account created successfully' });
-    } catch (error) {
-        console.error('Registration error:', error);
-        res.status(500).json({ error: 'Server error during registration' });
-    }
-});
 
 /* LOGIN LOGS - Owner Only */
 router.get('/login-logs', checkAuthenticated, checkOwner, async (req, res) => {

@@ -341,6 +341,8 @@ async function addToDatabase() {
         const ans1 = $('#answer1').val();
         const ans2 = $('#answer2').val();
         const ans3 = $('#answer3').val();
+
+        const dateNow = formatDateNow();
         
         var orderData = {
             userId: userId,
@@ -351,13 +353,15 @@ async function addToDatabase() {
             secAns1: ans1,
             secAns2: ans2,
             secAns3: ans3,
+            date: dateNow
         };
 
         $.post('/create_account/register', orderData, function(message, status) {
             console.log("response data: ", message, status);
             if (message.success) {
+                const nextPath = $('#path').val()
                 setTimeout(function() {
-                    window.location.href = "/admin/view-orders";
+                    window.location.href = nextPath + '/login';
                 }, 200);
             } else {
                 console.log("not success");
@@ -382,6 +386,40 @@ function generateUserID() {
             console.error(errorMsg);
             return 0;
         })
+}
+
+/*  generate and format the date now for the lastChanged item
+*/
+function formatDateNow() {
+    const dateNow = new Date();
+
+    var month = dateNow.getMonth() + 1;
+    var day = dateNow.getDate();
+    var year = dateNow.getFullYear();
+
+    var hours = dateNow.getHours();
+    var mins = dateNow.getMinutes();
+    var secs = dateNow.getSeconds();
+
+    var abbr = hours >= 12 ? 'pm' : 'am';   // abbreviations
+    hours = hours % 12;                     // not military time
+    hours = hours ? hours : 12;             // 0 means 12
+
+    month = formatWithZeros(month);
+    day = formatWithZeros(day);
+    hours = formatWithZeros(hours);
+    mins = formatWithZeros(mins);
+    secs = formatWithZeros(secs);
+
+    // format: mm-dd-yyyy hh:mm:ss am/pm
+    var formatted = [month, day, year].join('-') + ' ' + [hours, mins, secs].join(':') + ' ' + abbr;
+    return formatted;
+}
+
+/*  check and add leading zeros to the numbers
+*/
+function formatWithZeros(number) {
+    return String(number).padStart(2, '0'); //add leading zeros and two digits
 }
 
 function clear() {

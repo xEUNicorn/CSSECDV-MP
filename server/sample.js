@@ -42,7 +42,7 @@ const sampleUsers = [
     {   userId: 100004,
         username: "JuanitaGirlie",
         name: "Juanita Abagnale",
-        password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu",
+        password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu", //String
         status: "Customer",
         securityQuestions: ["3", "1", "5"],
         secAns1: "$2a$12$/1ySL6y7.89RcF5cZk0bGurCcEEdI2CiKLzv4gel8/IGUsVim0MJG",     // Gurl - Childhood Nickname
@@ -55,7 +55,7 @@ const sampleUsers = [
     {   userId: 100005,
         username: "Manila Branch",
         name: "Man ila",
-        password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu",
+        password: "$2a$12$g0df/6XG8TvZHf7xa4U/UuhzvFOQQOQ8RqxkH4Afhia2U8Qadd4r.", //Manila123!
         status: "Employee",
         securityQuestions: ["3", "4", "5"],
         secAns1: "$2a$12$cMdIlv4NWsCFieocaX6HZeGVM4uIP0Mga4XzMe/ILyF6rmCmJowc.",     // ESMC - Childhood Nickname
@@ -76,6 +76,19 @@ const sampleUsers = [
         secAns3: "$2b$12$iFZN1/dWlkUMp4znf6EK5.5K8Pyduts.WsgCoQJ8dYNFZIF6jHZcm", // Me - Favorite fictional character
         passwordHistory: [],
         lastChanged: "11-01-2025 01:10:04 pm" },
+
+    /* 7 */
+    {   userId: 100007,
+        username: "Renwo",
+        name: "ESMC CEO",
+        password: "$2a$12$uo7obAjU2b.vLI5Q0WO9p.mr6wU/D4Es979GrWDfcvdqLu60nuGoO", //ESMCOwner@2006
+        status: "Owner",
+        securityQuestions: ["1", "3", "5"],
+        secAns1: "$2a$12$s2zvnnGfNSZAj2eiZwKp.uniNqI9HEtYBFH1/4QR8ega.g9.wwVQK", // ESMC's Dog - First Pet's Name
+        secAns2: "$2a$12$npjbDpISekyzy80eLogBYOTY09/.Q69sbwz65pQ.njwEYMpLuEiTW", // ESMC Kiddo - Childhood Nickname
+        secAns3: "$2a$12$uzA3RwxqlZpm3RavHc6e.OzqQOY/nNhjqg564GKI8K/E/OFx5aUP.", // ESMC CEO - Favorite fictional character
+        passwordHistory: [],
+        lastChanged: "01-01-2006 12:00:00 am" },
 ];
 
 const sampleOrders = [
