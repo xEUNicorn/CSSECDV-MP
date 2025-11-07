@@ -21,19 +21,18 @@ router.get('/', async (req, res) =>{
 
 router.get('/login', (req, res) => {
     if (req.user) {
-        return res.redirect('/admin/view-orders');
+        return res.redirect('/search_parcel');
     }
     res.render('login', {
         layout : 'login.hbs',
         title  : 'Login | ESMC',
-        css    : 'login'
+        css    : 'login',
+        path   : 'search_parcel'
     });
 });
 
-router.post(
-    '/login',
-    passport.authenticate('local', {
-        successRedirect : '/admin/view-orders',
+router.post('/login', passport.authenticate('local', {
+        successRedirect : '/search_parcel',
         failureRedirect : '/search_parcel/login'
     })
 );

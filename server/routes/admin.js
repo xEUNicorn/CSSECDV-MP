@@ -31,14 +31,14 @@ router.get('/', async (req, res) =>{
     if(req.user){
         res.redirect('/admin/view-orders')
     }
-    res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login"});
+    res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"admin"});
 })
 
 router.get('/login', async (req, res) =>{
     if(req.user){
         res.redirect('/admin/view-orders')
     }
-    res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login"});
+    res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"admin"});
 })
 
 

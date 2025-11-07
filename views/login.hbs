@@ -9,7 +9,7 @@
         <div id="right-box">
             <div id="container">
                 <h1>Welcome Back!</h1>
-                <form action="/admin/login" method="POST" id="login-form">
+                <form action="/{{path}}/login" method="POST" id="login-form">
                     <div class="flex-parent" id="inputs">
                         <div>
                             <input type="text" placeholder="Username" name="username" required>
@@ -33,7 +33,7 @@
 <div id="popup" style="visibility:hidden;">
     <img id="question-mark" src="/img/question_mark.svg" />
     <h2>Please contact your hub manager for proper credentials</h2>
-    <p id="popup-msg"><a id="login-link" href="/admin/login">Back to Login</a></p>
+    <p id="popup-msg"><a id="login-link" href="/login">Back to Login</a></p>
 </div>
 
 <script>
