@@ -25,6 +25,13 @@
                     <!-- TODO: REROUTE TO ANOTHER ROUTE-->
                     <h6 id="forgot-password" onclick="showPop()">Forgot Password?</h6> 
                 </div>
+                
+                {{#if error}}  
+                <div id="text-container">
+                    <h5 id="error-msg">{{error}}</h5> 
+                </div>
+                {{/if}}
+                <!-- Will only appear if error is added as a parameter -->
             </div>
         </div>
     </div>

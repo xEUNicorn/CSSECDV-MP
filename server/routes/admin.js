@@ -19,7 +19,7 @@ checkAuthenticated = (req,res, next) => {
 }
 
 checkEmployee = (req, res, next) => {
-    if(req.user && req.user.status === 'Employee'){
+    if(req.user && !(req.user.status === 'Customer')){
         return next();
     }
     res.status(403).send('Access denied');
@@ -47,14 +47,35 @@ router.get('/login', async (req, res) =>{
     res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"admin"});
 })
 
-
+/*
 router.post('/login', passport.authenticate('local', { 
     successRedirect : '/admin/view-orders', 
     failureRedirect : '/admin/login',
     failureFlash: false 
 }), function(req, res, next){
 });
+*/
 
+//manual version of the function above
+router.post('/login', async (req, res, next) => {
+    passport.authenticate('local', (error, user, info) => {
+        if (error) {
+            return next(error);
+        }
+
+        if (!user) { // alternative to failureRedirect but with custom message
+            return res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"admin", error: info.message});
+        }
+
+        // alternative to successRedirect
+        req.logIn(user, (err) => {
+            if (err) {
+                return next(err);
+            }
+            return res.redirect('/admin/view-orders');
+        })
+    })(req, res, next); // let the request proceed instead of just checking it
+})
 
 /* === */
 

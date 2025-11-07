@@ -31,11 +31,26 @@ router.get('/login', (req, res) => {
     });
 });
 
-router.post('/login', passport.authenticate('local', {
-        successRedirect : '/search_parcel',
-        failureRedirect : '/search_parcel/login'
-    })
-);
+// with custom error callback to the login page
+router.post('/login', async (req, res, next) => {
+    passport.authenticate('local', (error, user, info) => {
+        if (error) {
+            return next(error);
+        }
+
+        if (!user) { // alternative to failureRedirect but with custom message
+            return res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"admin", error: info.message});
+        }
+
+        // alternative to successRedirect
+        req.logIn(user, (err) => {
+            if (err) {
+                return next(err);
+            }
+            return res.redirect('/admin/view-orders');
+        })
+    })(req, res, next); // let the request proceed instead of just checking it
+})
 
 router.post('/', async (req, res) =>{
     try {

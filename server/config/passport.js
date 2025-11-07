@@ -22,7 +22,7 @@ const verifyCallback = async (req, username, password, done) => {
         
         if (!user) {  
             console.log("no user!");
-            return done(null, false, { message: 'Invalid username or password' });
+            return done(null, false, { message: 'Invalid username and/or password' });
         }
         
         bcrypt.compare(password, user.password, async (err, result) => {
@@ -47,7 +47,7 @@ const verifyCallback = async (req, username, password, done) => {
                 });
             }
             return done(null, false, { 
-                message: `Invalid username or password. ${failInfo ? failInfo.remaining : ''} attempts remaining.` 
+                message: 'Invalid username and/or password' //removed counter for security purposes
             });
         }
         });
