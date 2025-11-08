@@ -1,8 +1,7 @@
 const express = require('express');
 const path = require('path');
 const router = express.Router();
-const bcrypt = require('bcrypt');
-//const { formatDateTime } = require('../middleware/loginSecurity');
+const { hashPassword } = require('../middleware/loginSecurity');
 
 const User = require('../models/User.js');
 
@@ -57,10 +56,10 @@ router.post('/register', async (req, res) => {
     try {
         const { userId, username, name, password, securityQuestions, secAns1, secAns2, secAns3, date } = req.body;
 
-        const hashedPass = await hashStrings(password)
-        const hashedsecAns1 = await hashStrings(secAns1)
-        const hashedsecAns2 = await hashStrings(secAns2)
-        const hashedsecAns3 = await hashStrings(secAns3)
+        const hashedPass = await hashPassword(password)
+        const hashedsecAns1 = await hashPassword(secAns1)
+        const hashedsecAns2 = await hashPassword(secAns2)
+        const hashedsecAns3 = await hashPassword(secAns3)
 
         // Create new user
         const newUser = new User({
@@ -91,16 +90,3 @@ router.post('/register', async (req, res) => {
 
 
 module.exports = router;
-
-async function hashStrings(toBeHashed) {
-    const saltRounds = 12; //higher means better security
-    try {
-        const salt = await bcrypt.genSalt(saltRounds);
-        const hash = await bcrypt.hash(toBeHashed, salt);
-        return hash;
-    } catch (error) {
-        console.error("Error in generating the hash:", error);
-        return null;
-    }
-    
-}

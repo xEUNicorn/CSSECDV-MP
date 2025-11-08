@@ -39,7 +39,7 @@ router.post('/login', async (req, res, next) => {
         }
 
         if (!user) { // alternative to failureRedirect but with custom message
-            return res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"admin", error: info.message});
+            return res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"search_parcel", error: info.message});
         }
 
         // alternative to successRedirect
@@ -47,7 +47,7 @@ router.post('/login', async (req, res, next) => {
             if (err) {
                 return next(err);
             }
-            return res.redirect('/admin/view-orders');
+            return res.redirect('/search_parcel');
         })
     })(req, res, next); // let the request proceed instead of just checking it
 })
