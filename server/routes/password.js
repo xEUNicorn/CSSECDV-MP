@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
-const { canChangePassword, formatDateTime, hashPassword } = require('../middleware/loginSecurity');
+const { canChangePassword, formatDateTime, hashPassword, compareHashes } = require('../middleware/loginSecurity');
 
 // Middleware to check if user is authenticated
 const checkAuthenticated = (req, res, next) => {
@@ -203,6 +203,178 @@ router.get('/can-change', checkAuthenticated, async (req, res) => {
         });
     } catch (error) {
         console.error('Error checking password eligibility:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+
+/* FORGOT PASSWORD ROUTES */
+
+/**
+ * Show Forgot Password Webpage
+ */
+router.get('/forgot_password', async (req, res) =>{
+    const pathFrom = req.query.from;
+
+    if (pathFrom) {
+        req.session.from = pathFrom;
+        return res.redirect('/password/forgot_password');
+    }
+
+    res.render('forgot_password', {layout: "account.hbs", title: "Forgot Password | ESMC", css:"forgot_password", 
+                                  path: req.session.from || null});
+})
+
+/**
+ * Verify Username by checking if existing
+ * If existing, return two random security questions previously picked
+ * Otherwise, return 0s as its values
+ */
+router.post('/verify-username', async (req, res) =>{
+    try {
+        const { username } = req.body;
+        const user = await User.findOne({ username: username });
+        var isExisting = false;
+        var randomQuestions = [0, 0]
+        var name = " "
+
+        if (user) {
+            isExisting = true;
+            const questions = user.securityQuestions;
+            randomQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 2); //shuffle and get two questions
+            name = user.name;
+        }
+        
+        res.json({success: true, exists: isExisting, questions: randomQuestions, name: name});
+    }
+    catch (error) {
+        console.error("Error retrieving orders:", error);
+        res.status(500).send({success: false, message: "Server Error"});
+    }
+})
+
+/**
+ * Verify Security Answers based on the Security Questions presented from user
+ */
+router.post('/verify-security-answers', async (req, res) =>{
+    try {
+        const { username, secQ1, secQ2, secA1, secA2 } = req.body;
+        const user = await User.findOne({ username: username }); //user exists
+        const listSecurityQuestions = user.securityQuestions;
+        var answers = true;                                     // assume all answers are true
+
+        if (listSecurityQuestions) {
+            const listHashedAnswers = [user.secAns1, user.secAns2, user.secAns3];
+            const listVerifyQuestions = [secQ1, secQ2];
+            const listVerifyAnswers = [secA1, secA2];
+
+            console.log(listVerifyQuestions)
+            console.log(listVerifyAnswers)
+            console.log("=====")
+
+            for (var i = 0; i < listSecurityQuestions.length; i++) {
+                const userQuestion = listSecurityQuestions[i];
+                const hashedAnswer = listHashedAnswers[i];
+
+                console.log(userQuestion)
+                console.log(hashedAnswer)
+                
+                for (var j = 0; j < listVerifyQuestions.length; j++) {
+                    if (listVerifyQuestions[j] === userQuestion) {
+                        console.log(j)
+                        const result = await compareHashes(listVerifyAnswers[j], hashedAnswer);
+
+                        if (!result) { //not matched
+                            answers = false;
+                            break;
+                        }
+                    }
+                }
+                if (!answers) { // do not specify which answer is wrong
+                    break;
+                }
+            }
+        }
+        console.log(answers)
+        
+        res.json({success: true, verified: answers});
+    }
+    catch (error) {
+        console.error("Error retrieving orders:", error);
+        res.status(500).send({success: false, message: "Server Error"});
+    }
+})
+
+/**
+ * Verify Security Answers based on the Security Questions presented from user
+ */
+router.post('/check-previous-passwords', async (req, res) =>{
+    try {
+        const { username, newPassword } = req.body;
+        const user = await User.findOne({ username: username }); //user exists
+        var prevPassword = false;
+
+        if (user.passwordHistory) {
+            for (const prevHashed of user.passwordHistory) {
+                const result = await bcrypt.compare(newPassword, prevHashed);
+                if (result) { //result means matched
+                    prevPassword = true;
+                    break;
+                }
+            }
+        }
+        
+        const currentPass = await compareHashes(newPassword, user.password);
+        if (currentPass) { //currentPass means matched
+            prevPassword = true;
+        }
+        
+        res.json({success: true, previous: prevPassword});
+    }
+    catch (error) {
+        console.error("Error retrieving orders:", error);
+        res.status(500).send({success: false, message: "Server Error"});
+    }
+})
+
+/**
+ * Update password from forgot password page
+ */
+router.post('/update-password', async (req, res) => {
+    try {
+        const { username, newPassword } = req.body;
+        const user = await User.findOne({ username: username });
+
+        // Update password
+        const currentTime = formatDateTime();
+        const passwordHistory = user.passwordHistory || [];
+        
+        // Add current password to history
+        passwordHistory.push(user.password); //stores the hashed password
+        
+        // Keep only last 5 passwords in history
+        if (passwordHistory.length > 5) {
+            passwordHistory.shift();
+        }
+        
+        //hash new password
+        const hashNewPass = await hashPassword(newPassword)
+
+        await User.updateOne(
+            { _id: user._id },
+            {
+                $set: {
+                    password: hashNewPass,
+                    passwordHistory: passwordHistory,
+                    lastChanged: currentTime
+                }
+            }
+        );
+
+        res.json({success: true});
+        
+    } catch (error) {
+        console.error('Password change error:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });

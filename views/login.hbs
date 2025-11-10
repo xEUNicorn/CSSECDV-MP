@@ -22,25 +22,17 @@
                 </form>
                 <div class="forgot-container">
                     <h6><a id="create-account" href="/create_account?from={{path}}">Create Account</a></h6>
-                    <!-- TODO: REROUTE TO ANOTHER ROUTE-->
-                    <h6 id="forgot-password" onclick="showPop()">Forgot Password?</h6> 
+                    <h6><a id="forgot-password" href="/password/forgot_password?from={{path}}">Forgot Password?</a></h6> 
                 </div>
-                
+                <!-- Will only appear if error is added as a parameter -->
                 {{#if error}}  
                 <div id="text-container">
                     <h5 id="error-msg">{{error}}</h5> 
                 </div>
                 {{/if}}
-                <!-- Will only appear if error is added as a parameter -->
             </div>
         </div>
     </div>
-</div>
-<!-- forgot password TODO: CHANGE THE CONTENT AND REDIRECT TO ANOTHER ROUTE-->
-<div id="popup" style="visibility:hidden;">
-    <img id="question-mark" src="/img/question_mark.svg" />
-    <h2>Please contact your hub manager for proper credentials</h2>
-    <p id="popup-msg"><a id="login-link" href="/{{path}}/login">Back to Login</a></p>
 </div>
 
 <script>
@@ -57,8 +49,4 @@
         eyeSymbol.classList.add("fa-eye-slash");
     }
     });
-
-    function showPop(){
-        document.getElementById("popup").style.visibility = "visible";
-    }
 </script>

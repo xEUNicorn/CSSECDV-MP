@@ -22,7 +22,9 @@ const sampleUsers = [
         secAns1: "$2a$12$WnMSrE7b1VHlAxEpW7HZgu5irZTik.w1Y5ASA82kQqtjtND1Kc45C",     // Torrez - Mother's maiden name
         secAns2: "$2a$12$QV.AhiLWQx9.4YFjGjGFWOgC67m8hiwt5zan5NPFnTyzdfSExMeNy",     // The One - Childhood Nickname
         secAns3: "$2a$12$/mY4dor6FrS.cY.I1nsd9.Gtr5VCDcJ/gPttQTEozmXzqlhf41dOC",     // International School - Name of the first school you attended
-        passwordHistory: [],
+        passwordHistory: [
+            '$2a$12$p.mSWN6uLaikwI2O5v2xWOYyf4YREhQHIz75nvcmtdYX5ssgTpi8S'      //Pass100@JP
+        ],
         lastChanged: "11-01-2025 12:49:01 pm" },
 
     /* 3 */

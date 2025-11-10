@@ -168,6 +168,24 @@ async function hashPassword(toBeHashed) {
     
 }
 
+/**
+ * Compare hashes, returns true if matched
+ */
+async function compareHashes(normalStr, hashedStr) {
+    try {
+        const result = await bcrypt.compare(normalStr, hashedStr);
+        if (result) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        console.error("Error in generating the hash:", error);
+        return null;
+    }
+    
+}
+
 module.exports = {
     checkAccountLock,
     recordFailedLogin,
@@ -175,6 +193,7 @@ module.exports = {
     canChangePassword,
     formatDateTime,
     hashPassword,
+    compareHashes,
     MAX_LOGIN_ATTEMPTS,
     LOCK_TIME
 };
