@@ -6,25 +6,12 @@ const passport = require('passport');
 const bcrypt = require('bcrypt');
 const Sessions = require('../models/Sessions.js');
 const { formatDateTime } = require('../middleware/loginSecurity');
+const { requireAuth, requireRole } = require('../middleware/auth');
 require('../config/passport.js')
 
 //const User = require('../models/User.js');
 const Order = require('../models/Order.js');
 const Update = require('../models/Update.js');
-
-checkAuthenticated = (req,res, next) => {
-    if(req.user){
-        return next();
-    }
-    res.redirect('/admin/login');
-}
-
-checkOwner = (req, res, next) => {
-    if(req.user && req.user.status === 'Owner'){
-        return next();
-    }
-    res.status(403).send('Access denied. Owner privileges required.');
-}
 
 /* LOGIN */
 router.get('/', async (req, res) =>{
@@ -54,7 +41,7 @@ router.post('/login', passport.authenticate('local', {
 
 
 /* SUMMARY OF ORDERS */
-router.get('/view-orders', checkAuthenticated, async (req, res) =>{
+router.get('/view-orders', requireAuth, async (req, res) =>{
     try {
         const orders = await Order.find();
         res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders });
@@ -66,7 +53,7 @@ router.get('/view-orders', checkAuthenticated, async (req, res) =>{
     }
 })
 
-router.post('/view-orders/more-details', checkAuthenticated, async (req, res) => {
+router.post('/view-orders/more-details', requireAuth, async (req, res) => {
     try {
         const { id } = req.body
         const orderDetails = await Order.findOne({ orderId: id });
@@ -91,7 +78,7 @@ router.post('/view-orders/more-details', checkAuthenticated, async (req, res) =>
     }
 })
 
-router.get('/view-orders/control-id', checkAuthenticated, async (req, res) => {
+router.get('/view-orders/control-id', requireAuth, async (req, res) => {
     try {
         const controlId = (req.query.controlId).toUpperCase();
         const orders = await Order.find({ "orderId": {$regex : controlId} });
@@ -103,7 +90,7 @@ router.get('/view-orders/control-id', checkAuthenticated, async (req, res) => {
     }
 });
 
-router.get('/view-orders/hub-to-hub', checkAuthenticated, async (req, res) => {
+router.get('/view-orders/hub-to-hub', requireAuth, async (req, res) => {
     try {
         const originSearch = req.query.originSearch;
         const destSearch = req.query.destSearch;
@@ -119,7 +106,7 @@ router.get('/view-orders/hub-to-hub', checkAuthenticated, async (req, res) => {
     }
 });
 
-router.get('/view-orders/daily-net', checkAuthenticated, async (req, res) => {
+router.get('/view-orders/daily-net', requireAuth, async (req, res) => {
     try {
         var tempDaySearch = req.query.daySearch;
         var year = '-' + tempDaySearch.substr(0, 4);
@@ -155,7 +142,7 @@ router.get('/view-orders/daily-net', checkAuthenticated, async (req, res) => {
     }
 });
 
-router.get('/view-orders/monthly-net', checkAuthenticated, async (req, res) => {
+router.get('/view-orders/monthly-net', requireAuth, async (req, res) => {
     try {
         var monthSearch = req.query.monthSearch;
         const month = monthSearch.substr(5, 7) + '-';
@@ -192,7 +179,7 @@ router.get('/view-orders/monthly-net', checkAuthenticated, async (req, res) => {
     }
 });
 
-router.get('/view-orders/annual-net', checkAuthenticated, async (req, res) => {
+router.get('/view-orders/annual-net', requireAuth, async (req, res) => {
     try {
         const yearSearch = req.query.yearSearch;
         const orders = await Order.find({
@@ -225,11 +212,11 @@ router.get('/view-orders/annual-net', checkAuthenticated, async (req, res) => {
 /* === */
 
 /* ADD ORDER */
-router.get('/create-order', checkAuthenticated, checkAuthenticated, async (req, res) =>{
+router.get('/create-order', requireAuth, async (req, res) =>{
     res.render('order_form', {layout: "admin.hbs", title: "Order Form", css:"order_form"});
 })
 
-router.post('/add-order', checkAuthenticated,    async (req, res) =>{
+router.post('/add-order', requireAuth,    async (req, res) =>{
     try {
         var { orderId, senderName, receiverName, senderNum, receiverNum,
               itemNum, itemDesc, itemPrice, 
@@ -276,7 +263,7 @@ router.post('/add-order', checkAuthenticated,    async (req, res) =>{
     
 })
 
-router.post('/validate', async (req, res) => {
+router.post('/validate', requireAuth, async (req, res) => {
     try {
         const { prefix } = req.body; // first three characters
         console.log("PREFIX", prefix);
@@ -296,7 +283,7 @@ router.post('/validate', async (req, res) => {
 /* === */
 
 /* EDIT ORDERS */
-router.get('/edit-order/:orderId', async (req, res) =>{
+router.get('/edit-order/:orderId', requireAuth, async (req, res) =>{
     const order = req.params.orderId;
     const specificOrder = await Order.findOne({ orderId: order});
 
@@ -350,7 +337,7 @@ router.get('/edit-order/:orderId', async (req, res) =>{
                                orderDetails: orderDetails});
 })
 
-router.post('/edit-order', async (req, res) =>{
+router.post('/edit-order', requireAuth, async (req, res) =>{
     try {
         var { orderId, senderName, receiverName, senderNum, receiverNum,
                 itemNum, itemDesc, itemPrice, 
@@ -396,7 +383,7 @@ router.post('/edit-order', async (req, res) =>{
 /* === */
 
 /* UPDATE ORDERS */
-router.post('/update-order', checkAuthenticated, checkAuthenticated, async (req, res) => {
+router.post('/update-order', requireAuth, async (req, res) => {
     try {
         var { id, newStatus, newEDA, newDate, newTime, statusDesc } = req.body;
         
@@ -445,7 +432,7 @@ router.post('/update-order', checkAuthenticated, checkAuthenticated, async (req,
 /* === */
 
 /* DELETE ORDERS */
-router.post('/delete-order', checkAuthenticated, checkAuthenticated, async (req, res) => {
+router.post('/delete-order', requireAuth, async (req, res) => {
     try {
         var { id } = req.body;
         const order = await Order.findOne({ orderId: id });
@@ -499,12 +486,14 @@ router.post('/register', async (req, res) => {
             console.error("Error fetching last userId:", err);
         }
 
+        const hashedPassword = await bcrypt.hash(password, 12);
+
         // Create new user
         const newUser = new User({
             userId: newUserId,
             username,
             name,
-            password, // In production, this should be hashed
+            password: hashedPassword,
             status: 'Employee', // Default status
             securityQuestions,
             secAns1,
@@ -527,7 +516,7 @@ router.post('/register', async (req, res) => {
 });
 
 /* LOGIN LOGS - Owner Only */
-router.get('/login-logs', checkAuthenticated, checkOwner, async (req, res) => {
+router.get('/login-logs', requireAuth, requireRole('Owner'), async (req, res) => {
     try {
         const users = await User.find().select('-password').sort({ lastLoginAttempt: -1 });
         
@@ -570,7 +559,7 @@ router.get('/login-logs', checkAuthenticated, checkOwner, async (req, res) => {
 });
 
 /* Get login history for specific user */
-router.get('/login-history/:username', checkAuthenticated, checkOwner, async (req, res) => {
+router.get('/login-history/:username', requireAuth, requireRole('Owner'), async (req, res) => {
     try {
         const user = await User.findOne({ username: req.params.username }).select('-password');
         
@@ -586,7 +575,7 @@ router.get('/login-history/:username', checkAuthenticated, checkOwner, async (re
 });
 
 /* Unlock account - Owner only */
-router.post('/unlock-account', checkAuthenticated, checkOwner, async (req, res) => {
+router.post('/unlock-account', requireAuth, requireRole('Owner'), async (req, res) => {
     try {
         const { username } = req.body;
         
@@ -613,7 +602,7 @@ router.post('/unlock-account', checkAuthenticated, checkOwner, async (req, res) 
 });
 
 /* Export logs - Owner only */
-router.get('/export-logs', checkAuthenticated, checkOwner, async (req, res) => {
+router.get('/export-logs', requireAuth, requireRole('Owner'), async (req, res) => {
     try {
         const users = await User.find().select('-password');
         
