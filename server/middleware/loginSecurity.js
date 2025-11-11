@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
 
 // Maximum failed login attempts before locking
 const MAX_LOGIN_ATTEMPTS = 5;
@@ -151,12 +152,48 @@ function formatDateTime(date = new Date()) {
     return `${month}-${day}-${year} ${hoursStr}:${minutes}:${seconds} ${ampm}`;
 }
 
+/**
+ * Hash the password using bcrypt module
+ */
+async function hashPassword(toBeHashed) {
+    const saltRounds = 12; //higher means better security
+    try {
+        const salt = await bcrypt.genSalt(saltRounds);
+        const hash = await bcrypt.hash(toBeHashed, salt);
+        return hash;
+    } catch (error) {
+        console.error("Error in generating the hash:", error);
+        return null;
+    }
+    
+}
+
+/**
+ * Compare hashes, returns true if matched
+ */
+async function compareHashes(normalStr, hashedStr) {
+    try {
+        const result = await bcrypt.compare(normalStr, hashedStr);
+        if (result) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        console.error("Error in generating the hash:", error);
+        return null;
+    }
+    
+}
+
 module.exports = {
     checkAccountLock,
     recordFailedLogin,
     recordSuccessfulLogin,
     canChangePassword,
     formatDateTime,
+    hashPassword,
+    compareHashes,
     MAX_LOGIN_ATTEMPTS,
     LOCK_TIME
 };

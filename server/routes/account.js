@@ -1,14 +1,20 @@
 const express = require('express');
 const path = require('path');
 const router = express.Router();
-const bcrypt = require('bcrypt');
-//const { formatDateTime } = require('../middleware/loginSecurity');
+const { hashPassword } = require('../middleware/loginSecurity');
 
 const User = require('../models/User.js');
 
 // view of the create account page
 router.get('/', async (req, res) =>{
-    res.render('create_account', {layout: "account.hbs", title: "Create Account | ESMC", css:"create_account"});
+    const pathFrom = req.query.from;
+
+    if (pathFrom) {
+        req.session.from = pathFrom;
+        return res.redirect('/create_account');
+    }
+    res.render('create_account', {layout: "account.hbs", title: "Create Account | ESMC", css:"create_account", 
+                                  path: req.session.from || null});
 })
 
 // used to get the latest user id and return a new one for the new account
@@ -48,21 +54,19 @@ router.post('/unique-username', async (req, res) => {
 // used to add the initial information of the user to the database without the security questions
 router.post('/register', async (req, res) => {
     try {
-        const { userId, username, name, password, securityQuestions, secAns1, secAns2, secAns3 } = req.body;
+        const { userId, username, name, phoneNum, password, securityQuestions, secAns1, secAns2, secAns3, date } = req.body;
 
-        const hashedPass = await hashStrings(password)
-        const hashedsecAns1 = await hashStrings(secAns1)
-        const hashedsecAns2 = await hashStrings(secAns2)
-        const hashedsecAns3 = await hashStrings(secAns3)
-
-        const sample = await hashStrings("String")
-        console.log(sample)
+        const hashedPass = await hashPassword(password)
+        const hashedsecAns1 = await hashPassword(secAns1)
+        const hashedsecAns2 = await hashPassword(secAns2)
+        const hashedsecAns3 = await hashPassword(secAns3)
 
         // Create new user
         const newUser = new User({
             userId: userId,
             username,
             name,
+            phoneNum,
             password: hashedPass, 
             status: "Customer", // Default status
             securityQuestions,
@@ -70,7 +74,7 @@ router.post('/register', async (req, res) => {
             secAns2: hashedsecAns2,
             secAns3: hashedsecAns3,
             passwordHistory: [],
-            lastChanged: ' ',
+            lastChanged: date,
             failedLoginAttempts: 0,
             accountLocked: false,
             loginHistory: []
@@ -87,16 +91,3 @@ router.post('/register', async (req, res) => {
 
 
 module.exports = router;
-
-async function hashStrings(toBeHashed) {
-    const saltRounds = 12; //higher means better security
-    try {
-        const salt = await bcrypt.genSalt(saltRounds);
-        const hash = await bcrypt.hash(toBeHashed, salt);
-        return hash;
-    } catch (error) {
-        console.error("Error in generating the hash:", error);
-        return null;
-    }
-    
-}

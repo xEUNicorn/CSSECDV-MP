@@ -8,8 +8,7 @@ const bodyParser = require('body-parser');
 const connectDB = require('./server/config/db');
 
 const mongoose = require('mongoose');
-const { sampleUsers, sampleOrders, sampleUpdates } = require('./server/sample'); //delete
-//const { employeeUsers } = require('./server/user');       //for deployment
+const { sampleUsers, sampleOrders, sampleUpdates } = require('./server/sample');
 const User = require('./server/models/User');
 const Order = require('./server/models/Order');
 const Update = require('./server/models/Update');
@@ -32,14 +31,6 @@ async function createSample() {
     await User.insertMany(sampleUsers);
     await Order.insertMany(sampleOrders);
     await Update.insertMany(sampleUpdates);
-
-    /*          //for deployment
-    const existingUsers = await User.countDocuments();
-
-    if (existingUsers === 0) {
-        await User.insertMany(employeeUsers);
-    }
-    */
 }
 
 app.use(session({

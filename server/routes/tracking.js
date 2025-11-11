@@ -5,20 +5,64 @@ const router = express.Router();
 const Order = require('../models/Order.js');
 const Update = require('../models/Update.js');
 
+const passport = require('passport');
+require('../config/passport');
+
+router.get('/', (req, res, next) => {
+    if (!req.user) {
+        return res.redirect('/search_parcel/login');
+    }
+    next();   
+});
 
 router.get('/', async (req, res) =>{
     res.render('search_parcel', {title: "Search | ESMC", css:"search_parcel"});
 })
 
+router.get('/login', (req, res) => {
+    if (req.user) {
+        return res.redirect('/search_parcel');
+    }
+    res.render('login', {
+        layout : 'login.hbs',
+        title  : 'Login | ESMC',
+        css    : 'login',
+        path   : 'search_parcel'
+    });
+});
+
+// with custom error callback to the login page
+router.post('/login', async (req, res, next) => {
+    passport.authenticate('local', (error, user, info) => {
+        if (error) {
+            return next(error);
+        }
+
+        if (!user) { // alternative to failureRedirect but with custom message
+            return res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"search_parcel", error: info.message});
+        }
+
+        // alternative to successRedirect
+        req.logIn(user, (err) => {
+            if (err) {
+                return next(err);
+            }
+            return res.redirect('/search_parcel');
+        })
+    })(req, res, next); // let the request proceed instead of just checking it
+})
+
 router.post('/', async (req, res) =>{
     try {
         const { id } = req.body;
-        const trackerId = await Order.findOne({ orderId: id });
-        if (trackerId) {
-            res.json({ exists: true });
-        } else {
-            res.json({ exists: false });
-        }
+        if(!req.user) { 
+            return res.status(401).json({exists:false}); 
+        }  
+        const trackerId = await Order.findOne({
+            orderId : id,
+            userID  : req.user.employeeId            
+        });
+        res.json({ exists: Boolean(trackerId) });
     } catch (error) {
         console.error("Database error:", error);
         res.status(500).json({ exists: false });
@@ -26,10 +70,16 @@ router.post('/', async (req, res) =>{
 })
 
 router.get('/track=:id', async (req, res) =>{
+    if(!req.user) {
+        return res.redirect('/search_parcel/login'); 
+    }
     const id = req.params.id;
     console.log(id);
     try {
-        const order = await Order.findOne({ orderId: id });
+        const order = await Order.findOne({ 
+            orderId : id, 
+            userID : req.user.employeeId
+        });
         if (!order) {
             return res.redirect('/search_parcel');
         }
@@ -45,9 +95,15 @@ router.get('/track=:id', async (req, res) =>{
 })
 
 router.get('/track=:id/more-details', async (req, res) =>{
+    if(!req.user){ 
+        return res.redirect('/search_parcel/login'); 
+    }
     const id = req.params.id;
     try {
-        const order = await Order.findOne({ orderId: id });
+        const order = await Order.findOne({ 
+            orderId: id,
+            userID : req.user.employeeId
+        });
         if (!order) {
             return res.redirect('/search_parcel');
         }

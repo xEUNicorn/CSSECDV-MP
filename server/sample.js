@@ -22,7 +22,9 @@ const sampleUsers = [
         secAns1: "$2a$12$WnMSrE7b1VHlAxEpW7HZgu5irZTik.w1Y5ASA82kQqtjtND1Kc45C",     // Torrez - Mother's maiden name
         secAns2: "$2a$12$QV.AhiLWQx9.4YFjGjGFWOgC67m8hiwt5zan5NPFnTyzdfSExMeNy",     // The One - Childhood Nickname
         secAns3: "$2a$12$/mY4dor6FrS.cY.I1nsd9.Gtr5VCDcJ/gPttQTEozmXzqlhf41dOC",     // International School - Name of the first school you attended
-        passwordHistory: [],
+        passwordHistory: [
+            '$2a$12$p.mSWN6uLaikwI2O5v2xWOYyf4YREhQHIz75nvcmtdYX5ssgTpi8S'      //Pass100@JP
+        ],
         lastChanged: "11-01-2025 12:49:01 pm" },
 
     /* 3 */
@@ -42,7 +44,7 @@ const sampleUsers = [
     {   userId: 100004,
         username: "JuanitaGirlie",
         name: "Juanita Abagnale",
-        password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu",
+        password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu", //String
         status: "Customer",
         securityQuestions: ["3", "1", "5"],
         secAns1: "$2a$12$/1ySL6y7.89RcF5cZk0bGurCcEEdI2CiKLzv4gel8/IGUsVim0MJG",     // Gurl - Childhood Nickname
@@ -55,7 +57,7 @@ const sampleUsers = [
     {   userId: 100005,
         username: "Manila Branch",
         name: "Man ila",
-        password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu",
+        password: "$2a$12$g0df/6XG8TvZHf7xa4U/UuhzvFOQQOQ8RqxkH4Afhia2U8Qadd4r.", //Manila123!
         status: "Employee",
         securityQuestions: ["3", "4", "5"],
         secAns1: "$2a$12$cMdIlv4NWsCFieocaX6HZeGVM4uIP0Mga4XzMe/ILyF6rmCmJowc.",     // ESMC - Childhood Nickname
@@ -81,9 +83,8 @@ const sampleUsers = [
     {   userId: 100007,
         username: "admin",
         name: "Admin Owner",
-        password: "$2b$12$pFq1ESnL5cQ3cudaVFWc8uceRNjlZxa/0KoyrBglGh9T1Fqn7SGhC", //Admin123!
+        password: "$2a$12$uo7obAjU2b.vLI5Q0WO9p.mr6wU/D4Es979GrWDfcvdqLu60nuGoO", //ESMCOwner@2006
         status: "Owner",
-        hubName: "Admin Hub",
         securityQuestions: ["1", "2", "3"],
         secAns1: "$2b$12$kU/p.FXg5pidk2rRntF3zeX7tfT91dtYowRebHSN77FEBZS7N6Myi", // Admin - First Pet's Name
         secAns2: "$2b$12$Z6qbUY/48SUg/xHCVlN7heyUQbA6ke4wo7bleDIh4bOtEEenVOF6u", // Admin - Childhood Nickname
