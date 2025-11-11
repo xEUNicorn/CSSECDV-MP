@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/css/error_generic.css">
+</head>
+<body>
+    <div class="generic-error">
+        <div class="generic-error__card">
+            <div class="generic-error__status">{{statusCode}}</div>
+            <h1 class="generic-error__title">{{titleText}}</h1>
+            <p class="generic-error__message">{{message}}</p>
+            <div class="generic-error__actions">
+                <a class="error-btn error-btn--primary" href="/">Go to Homepage</a>
+                <a class="error-btn error-btn--secondary" href="/contact_us">Contact Support</a>
+            </div>
+            {{#if referenceId}}
+            <p class="generic-error__reference">Reference ID: {{referenceId}}</p>
+            {{/if}}
+        </div>
+    </div>
+</body>
+</html>
+

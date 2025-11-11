@@ -1,20 +1,14 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 const router = express.Router();
 const User = require('../models/User');
 const { canChangePassword, formatDateTime } = require('../middleware/loginSecurity');
-
-// Middleware to check if user is authenticated
-const checkAuthenticated = (req, res, next) => {
-    if (req.user) {
-        return next();
-    }
-    res.status(401).json({ error: 'Not authenticated' });
-};
+const { requireAuth } = require('../middleware/auth');
 
 /**
  * Render change password page
  */
-router.get('/change', checkAuthenticated, (req, res) => {
+router.get('/change', requireAuth, (req, res) => {
     res.render('change_password', {
         layout: 'admin.hbs',
         title: 'Change Password | ESMC',
@@ -48,7 +42,7 @@ const checkRecentAuth = (req, res, next) => {
 /**
  * Re-authenticate user before critical operations
  */
-router.post('/verify-password', checkAuthenticated, async (req, res) => {
+router.post('/verify-password', requireAuth, async (req, res) => {
     try {
         const { password } = req.body;
         const user = await User.findById(req.user._id);
@@ -58,7 +52,8 @@ router.post('/verify-password', checkAuthenticated, async (req, res) => {
         }
 
         // Verify password
-        if (user.password !== password) {
+        const passwordMatches = await bcrypt.compare(password, user.password);
+        if (!passwordMatches) {
             return res.status(401).json({ error: 'Invalid password' });
         }
 
@@ -78,7 +73,7 @@ router.post('/verify-password', checkAuthenticated, async (req, res) => {
 /**
  * Change password with validation
  */
-router.post('/change-password', checkAuthenticated, checkRecentAuth, async (req, res) => {
+router.post('/change-password', requireAuth, checkRecentAuth, async (req, res) => {
     try {
         const { currentPassword, newPassword, confirmPassword } = req.body;
         const user = await User.findById(req.user._id);
@@ -88,7 +83,8 @@ router.post('/change-password', checkAuthenticated, checkRecentAuth, async (req,
         }
 
         // Verify current password
-        if (user.password !== currentPassword) {
+        const currentMatches = await bcrypt.compare(currentPassword, user.password);
+        if (!currentMatches) {
             return res.status(401).json({ error: 'Current password is incorrect' });
         }
 
@@ -106,7 +102,12 @@ router.post('/change-password', checkAuthenticated, checkRecentAuth, async (req,
         }
 
         // Check if new password is in password history
-        if (user.passwordHistory && user.passwordHistory.includes(newPassword)) {
+        const passwordHistory = user.passwordHistory || [];
+        const reuseDetected = await Promise.all(
+            passwordHistory.map(async (oldHash) => bcrypt.compare(newPassword, oldHash))
+        );
+
+        if (reuseDetected.some((match) => match)) {
             return res.status(400).json({ 
                 error: 'Cannot reuse a previous password. Please choose a different password.' 
             });
@@ -114,8 +115,8 @@ router.post('/change-password', checkAuthenticated, checkRecentAuth, async (req,
 
         // Update password
         const currentTime = formatDateTime();
-        const passwordHistory = user.passwordHistory || [];
-        
+        const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+
         // Add current password to history
         passwordHistory.push(user.password);
         
@@ -128,7 +129,7 @@ router.post('/change-password', checkAuthenticated, checkRecentAuth, async (req,
             { _id: user._id },
             {
                 $set: {
-                    password: newPassword,
+                    password: hashedNewPassword,
                     passwordHistory: passwordHistory,
                     lastChanged: currentTime
                 }
@@ -152,7 +153,7 @@ router.post('/change-password', checkAuthenticated, checkRecentAuth, async (req,
 /**
  * Get password change eligibility
  */
-router.get('/can-change', checkAuthenticated, async (req, res) => {
+router.get('/can-change', requireAuth, async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
         
