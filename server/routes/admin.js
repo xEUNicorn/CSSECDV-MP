@@ -457,10 +457,6 @@ router.get('/logout', (req, res, next) => {
     });
 })
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
 /* REGISTRATION */
 router.get('/register', async (req, res) => {
     res.render('register', {layout: "login.hbs", title: "Register | ESMC", css:"register"});
@@ -519,8 +515,6 @@ router.post('/register', async (req, res) => {
     }
 });
 
->>>>>>> 3030ff6eba8d02129d2f96bfc1f78c282df72fa3
->>>>>>> 871ad642e070db15d17c5628c08cca591201913a
 /* LOGIN LOGS - Owner Only */
 router.get('/login-logs', requireAuth, requireRole('Owner'), async (req, res) => {
     try {
