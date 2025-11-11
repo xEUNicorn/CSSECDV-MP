@@ -457,6 +457,70 @@ router.get('/logout', (req, res, next) => {
     });
 })
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+/* REGISTRATION */
+router.get('/register', async (req, res) => {
+    res.render('register', {layout: "login.hbs", title: "Register | ESMC", css:"register"});
+});
+
+router.post('/register', async (req, res) => {
+    try {
+        const { name, username, password, securityQuestions, secAns1, secAns2, secAns3 } = req.body;
+
+        // Check if username already exists
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.status(400).json({ error: 'Username already exists' });
+        }
+
+        // Validate security questions
+        if (!securityQuestions || securityQuestions.length !== 3) {
+            return res.status(400).json({ error: 'Please select 3 security questions' });
+        }
+
+        // Get the next userId
+        let newUserId = 1001;
+        try {
+            const lastUser = await User.findOne().sort({ userId: -1 }).exec();
+            newUserId = lastUser ? lastUser.userId + 1 : 1001;
+        } catch (err) {
+            console.error("Error fetching last userId:", err);
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        // Create new user
+        const newUser = new User({
+            userId: newUserId,
+            username,
+            name,
+            password: hashedPassword,
+            status: 'Employee', // Default status
+            securityQuestions,
+            secAns1,
+            secAns2,
+            secAns3,
+            passwordHistory: [],
+            lastChanged: formatDateTime(),
+            failedLoginAttempts: 0,
+            accountLocked: false,
+            loginHistory: []
+        });
+
+        await newUser.save();
+        console.log('User registered:', newUser);
+        res.json({ success: true, message: 'Account created successfully' });
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({ error: 'Server error during registration' });
+    }
+});
+
+>>>>>>> 3030ff6eba8d02129d2f96bfc1f78c282df72fa3
+>>>>>>> 871ad642e070db15d17c5628c08cca591201913a
 /* LOGIN LOGS - Owner Only */
 router.get('/login-logs', requireAuth, requireRole('Owner'), async (req, res) => {
     try {
