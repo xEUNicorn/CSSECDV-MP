@@ -2,7 +2,6 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const router = express.Router();
 const User = require('../models/User');
-const bcrypt = require('bcrypt');
 const { canChangePassword, formatDateTime, hashPassword, compareHashes } = require('../middleware/loginSecurity');
 const { requireAuth } = require('../middleware/auth');
 
@@ -135,36 +134,17 @@ router.post('/change-password', requireAuth, checkRecentAuth, async (req, res) =
                     passwordHistory: passwordHistory,
                     lastChanged: currentTime
                 }
-                
-                //hash new password
-                const hashNewPass = await hashPassword(newPassword)
-
-                await User.updateOne(
-                    { _id: user._id },
-                    {
-                        $set: {
-                            password: hashNewPass,
-                            passwordHistory: passwordHistory,
-                            lastChanged: currentTime
-                        }
-                    }
-                );
-
-                // Clear re-authentication timestamp
-                delete req.session.reAuthTime;
-
-                res.json({ 
-                    success: true, 
-                    message: 'Password changed successfully',
-                    lastChanged: currentTime
-                });
-            } else {
-                console.log('Passwords do not match! Authentication failed to change password.');
-                return res.status(401).json({ error: 'Current password is incorrect' });
             }
-        });
+        );
 
-        
+        // Clear re-authentication timestamp
+        delete req.session.reAuthTime;
+
+        res.json({ 
+            success: true, 
+            message: 'Password changed successfully',
+            lastChanged: currentTime
+        });
     } catch (error) {
         console.error('Password change error:', error);
         res.status(500).json({ error: 'Server error' });
