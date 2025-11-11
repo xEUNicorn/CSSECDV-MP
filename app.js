@@ -86,18 +86,13 @@ app.engine('hbs', engine({
         allowProtoPropertiesByDefault: true,
         allowProtoMethodsByDefault: true,
     },
-<<<<<<< HEAD
     helpers: {
         eq: function(a, b) {
             return a === b;
         }
     },
-=======
->>>>>>> 871ad642e070db15d17c5628c08cca591201913a
     cache: false
 }));
-
-
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({extended: true}));
