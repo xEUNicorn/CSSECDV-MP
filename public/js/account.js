@@ -96,8 +96,8 @@ $(document).ready(function() {
 */
 async function checkInputs() {
     const username = $('#username').val();
-    const firstname = $('#firstname').val();
-    const lastname = $('#lastname').val();
+    const name = $('#firstlast').val();
+    const phoneNum = $('#phone-number').val();
 
     const password = $('#pass').val();
     const retype = $('#retype-pass').val();
@@ -111,14 +111,18 @@ async function checkInputs() {
         console.error("Error in checking username:", error);
     }
 
-    if (firstname.trim() === "") {
+    if (name.trim() === "") {
         check = false;
-        addError("First Name is EMPTY!");
+        addError("Name is EMPTY!");
     }
 
-    if (lastname.trim() === "") {
+    if (phoneNum.trim() === "" || phoneNum.trim() === null) {
         check = false;
-        addError("Last Name is EMPTY!");
+        addError("Phone Number is EMPTY!");
+        if (check && !phoneNum.trim().startsWith('9')) {
+            check = false;
+            addError("Phone Number is INCORRECT FORMAT (Start with 9)!");
+        }
     }
 
     if (!validatePassword(true)) {
