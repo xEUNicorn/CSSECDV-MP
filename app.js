@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const { engine } = require('express-handlebars');
 const path = require('path');
+const { randomUUID } = require('crypto');
 const app = express();
 const bodyParser = require('body-parser');
 const connectDB = require('./server/config/db');
@@ -63,6 +64,10 @@ createSample().catch(console.error);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+if (process.env.NODE_ENV !== 'production') {
+    app.set('view cache', false);
+}
+
 app.engine('hbs', engine({
     extname : '.hbs', 
     defaultLayout: 'main',
@@ -71,12 +76,16 @@ app.engine('hbs', engine({
     runtimeOptions: {
         allowProtoPropertiesByDefault: true,
         allowProtoMethodsByDefault: true,
-    }
+    },
+    helpers: {
+        eq: function(a, b) {
+            return a === b;
+        }
+    },
+    cache: false
 }));
 
-
-
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({extended: true}));
 app.set('view engine', 'hbs');
 
@@ -99,6 +108,46 @@ app.use((req, res, next) => {
         title: "404 - Page Not Found | ESMC",
         css: "error404"
     });
+});
+
+// Generic error handler
+app.use((err, req, res, next) => {
+    if (res.headersSent) {
+        return next(err);
+    }
+
+    console.error('Unhandled error:', err);
+
+    const status = err.status || 500;
+    const titleText = status === 500 ? 'Something Went Wrong' : 'Request Error';
+    const message = status === 500
+        ? 'An unexpected error occurred. Please try again later.'
+        : err.publicMessage || err.message || 'An error occurred while processing your request.';
+    const referenceId = randomUUID();
+
+    if (req.accepts('html')) {
+        return res.status(status).render('error_generic', {
+            layout: false,
+            title: `${status} Error | ESMC`,
+            css: 'error_generic',
+            statusCode: status,
+            titleText,
+            message,
+            referenceId
+        });
+    }
+
+    if (req.accepts('json')) {
+        return res.status(status).json({
+            error: message,
+            referenceId
+        });
+    }
+
+    return res
+        .status(status)
+        .type('text')
+        .send(`${message} (Reference ID: ${referenceId})`);
 });
 
 

@@ -1,8 +1,10 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const { canChangePassword, formatDateTime, hashPassword, compareHashes } = require('../middleware/loginSecurity');
+const { requireAuth } = require('../middleware/auth');
 
 // Middleware to check if user is authenticated
 const checkAuthenticated = (req, res, next) => {
@@ -15,7 +17,7 @@ const checkAuthenticated = (req, res, next) => {
 /**
  * Render change password page
  */
-router.get('/change', checkAuthenticated, (req, res) => {
+router.get('/change', requireAuth, (req, res) => {
     res.render('change_password', {
         layout: 'admin.hbs',
         title: 'Change Password | ESMC',
@@ -49,7 +51,7 @@ const checkRecentAuth = (req, res, next) => {
 /**
  * Re-authenticate user before critical operations
  */
-router.post('/verify-password', checkAuthenticated, async (req, res) => {
+router.post('/verify-password', requireAuth, async (req, res) => {
     try {
         const { password } = req.body;
         const user = await User.findById(req.user._id);
@@ -59,27 +61,10 @@ router.post('/verify-password', checkAuthenticated, async (req, res) => {
         }
 
         // Verify password
-        bcrypt.compare(password, user.password, async (err, result) => {
-            if (err) {
-                console.error('Error comparing passwords:', err);
-                return;
-            }
-
-            if (result) {
-                console.log('Passwords match! User authenticated to verify change password.');
-                // Set re-authentication timestamp
-                req.session.reAuthTime = Date.now();
-            
-                res.json({ 
-                    success: true, 
-                    message: 'Password verified successfully' 
-                });
-            } else {
-                console.log('Passwords do not match! Authentication failed to verify change password.');
-                return res.status(401).json({ error: 'Invalid password' });
-            }
-        });
-        
+        const passwordMatches = await bcrypt.compare(password, user.password);
+        if (!passwordMatches) {
+            return res.status(401).json({ error: 'Invalid password' });
+        }
         
     } catch (error) {
         console.error('Password verification error:', error);
@@ -90,7 +75,7 @@ router.post('/verify-password', checkAuthenticated, async (req, res) => {
 /**
  * Change password with validation
  */
-router.post('/change-password', checkAuthenticated, checkRecentAuth, async (req, res) => {
+router.post('/change-password', requireAuth, checkRecentAuth, async (req, res) => {
     try {
         const { currentPassword, newPassword, confirmPassword } = req.body;
         const user = await User.findById(req.user._id);
@@ -100,49 +85,55 @@ router.post('/change-password', checkAuthenticated, checkRecentAuth, async (req,
         }
 
         // Verify current password
-        bcrypt.compare(currentPassword, user.password, async (err, result) => {
-            if (err) {
-                console.error('Error comparing passwords:', err);
-                return;
-            }
+        const currentMatches = await bcrypt.compare(currentPassword, user.password);
+        if (!currentMatches) {
+            return res.status(401).json({ error: 'Current password is incorrect' });
+        }
 
-            if (result) {
-                console.log('Passwords match! User authenticated to change password.');
-                // Check if passwords match
-                if (newPassword !== confirmPassword) {
-                    return res.status(400).json({ error: 'New passwords do not match' });
-                }
+        // Check if passwords match
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ error: 'New passwords do not match' });
+        }
+      
+        // Check if password can be changed (at least 1 day old)
+        if (!canChangePassword(user.lastChanged)) {
+            return res.status(400).json({ 
+                error: 'Password must be at least one day old before it can be changed again',
+                lastChanged: user.lastChanged
+            });
+        }
 
-                // Check if password can be changed (at least 1 day old)
-                if (!canChangePassword(user.lastChanged)) {
-                    return res.status(400).json({ 
-                        error: 'Password must be at least one day old before it can be changed again',
-                        lastChanged: user.lastChanged
-                    });
-                }
+        // Check if new password is in password history
+        const passwordHistory = user.passwordHistory || [];
+        const reuseDetected = await Promise.all(
+            passwordHistory.map(async (oldHash) => bcrypt.compare(newPassword, oldHash))
+        );
 
-                // Check if new password is in password history
-                if (user.passwordHistory) {
-                    for (const prevHashed of user.passwordHistory) {
-                        const result = await bcrypt.compare(newPassword, prevHashed);
-                        if (result) { //result means matched
-                            return res.status(400).json({ 
-                                error: 'Cannot reuse a previous password. Please choose a different password.' 
-                            });
-                        }
-                    }
-                }
+        if (reuseDetected.some((match) => match)) {
+            return res.status(400).json({ 
+                error: 'Cannot reuse a previous password. Please choose a different password.' 
+            });
+        }
 
-                // Update password
-                const currentTime = formatDateTime();
-                const passwordHistory = user.passwordHistory || [];
-                
-                // Add current password to history
-                passwordHistory.push(user.password); //stores the hashed password
-                
-                // Keep only last 5 passwords in history
-                if (passwordHistory.length > 5) {
-                    passwordHistory.shift();
+        // Update password
+        const currentTime = formatDateTime();
+        const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+
+        // Add current password to history
+        passwordHistory.push(user.password);
+        
+        // Keep only last 5 passwords in history
+        if (passwordHistory.length > 5) {
+            passwordHistory.shift();
+        }
+
+        await User.updateOne(
+            { _id: user._id },
+            {
+                $set: {
+                    password: hashedNewPassword,
+                    passwordHistory: passwordHistory,
+                    lastChanged: currentTime
                 }
                 
                 //hash new password
@@ -183,7 +174,7 @@ router.post('/change-password', checkAuthenticated, checkRecentAuth, async (req,
 /**
  * Get password change eligibility
  */
-router.get('/can-change', checkAuthenticated, async (req, res) => {
+router.get('/can-change', requireAuth, async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
         

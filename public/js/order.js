@@ -648,5 +648,15 @@ function updateStatus() {
     });
 }
 
+// Dropdown menu toggle function
+function dropDownMenu() {
+    var links = document.getElementById('links');
+    if (links.style.display === 'none' || links.style.display === '') {
+        links.style.display = 'block';
+    } else {
+        links.style.display = 'none';
+    }
+}
+
 
 

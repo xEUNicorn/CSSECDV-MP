@@ -79,18 +79,18 @@ const sampleUsers = [
         passwordHistory: [],
         lastChanged: "11-01-2025 01:10:04 pm" },
 
-    /* 7 */
+    /* 7 - ADMIN OWNER */
     {   userId: 100007,
-        username: "Renwo",
-        name: "ESMC CEO",
+        username: "admin",
+        name: "Admin Owner",
         password: "$2a$12$uo7obAjU2b.vLI5Q0WO9p.mr6wU/D4Es979GrWDfcvdqLu60nuGoO", //ESMCOwner@2006
         status: "Owner",
-        securityQuestions: ["1", "3", "5"],
-        secAns1: "$2a$12$s2zvnnGfNSZAj2eiZwKp.uniNqI9HEtYBFH1/4QR8ega.g9.wwVQK", // ESMC's Dog - First Pet's Name
-        secAns2: "$2a$12$npjbDpISekyzy80eLogBYOTY09/.Q69sbwz65pQ.njwEYMpLuEiTW", // ESMC Kiddo - Childhood Nickname
-        secAns3: "$2a$12$uzA3RwxqlZpm3RavHc6e.OzqQOY/nNhjqg564GKI8K/E/OFx5aUP.", // ESMC CEO - Favorite fictional character
+        securityQuestions: ["1", "2", "3"],
+        secAns1: "$2b$12$kU/p.FXg5pidk2rRntF3zeX7tfT91dtYowRebHSN77FEBZS7N6Myi", // Admin - First Pet's Name
+        secAns2: "$2b$12$Z6qbUY/48SUg/xHCVlN7heyUQbA6ke4wo7bleDIh4bOtEEenVOF6u", // Admin - Childhood Nickname
+        secAns3: "$2b$12$iFZN1/dWlkUMp4znf6EK5.5K8Pyduts.WsgCoQJ8dYNFZIF6jHZcm", // Admin - Favorite fictional character
         passwordHistory: [],
-        lastChanged: "01-01-2006 12:00:00 am" },
+        lastChanged: "11-01-2025 01:10:04 pm" },
 ];
 
 const sampleOrders = [

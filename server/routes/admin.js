@@ -5,6 +5,8 @@ const User = require('../models/User.js');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 const Sessions = require('../models/Sessions.js');
+const { formatDateTime } = require('../middleware/loginSecurity');
+const { requireAuth, requireRole } = require('../middleware/auth');
 require('../config/passport.js')
 
 //const User = require('../models/User.js');
@@ -84,7 +86,7 @@ router.post('/login', async (req, res, next) => {
 router.get('/view-orders', checkAuthenticated, checkEmployee, async (req, res) =>{
     try {
         const orders = await Order.find();
-        res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders });
+        res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders, userStatus: req.user.status });
     }
     catch (error)
     { 
@@ -505,16 +507,16 @@ router.get('/logout', checkAuthenticated, checkEmployee, (req, res, next) => {
 
 
 /* LOGIN LOGS - Owner Only */
-router.get('/login-logs', checkAuthenticated, checkOwner, async (req, res) => {
+router.get('/login-logs', requireAuth, requireRole('Owner'), async (req, res) => {
     try {
         const users = await User.find().select('-password').sort({ lastLoginAttempt: -1 });
-        
-        const totalSuccessful = users.reduce((sum, user) => 
+
+        const totalSuccessful = users.reduce((sum, user) =>
             sum + (user.loginHistory ? user.loginHistory.length : 0), 0);
-        const totalFailed = users.reduce((sum, user) => 
+        const totalFailed = users.reduce((sum, user) =>
             sum + (user.failedLoginAttempts || 0), 0);
         const lockedAccounts = users.filter(user => user.accountLocked).length;
-        const activeUsers = users.filter(user => 
+        const activeUsers = users.filter(user =>
             user.loginHistory && user.loginHistory.length > 0).length;
 
         res.render('login_logs', {
@@ -548,7 +550,7 @@ router.get('/login-logs', checkAuthenticated, checkOwner, async (req, res) => {
 });
 
 /* Get login history for specific user */
-router.get('/login-history/:username', checkAuthenticated, checkOwner, async (req, res) => {
+router.get('/login-history/:username', requireAuth, requireRole('Owner'), async (req, res) => {
     try {
         const user = await User.findOne({ username: req.params.username }).select('-password');
         
@@ -564,7 +566,7 @@ router.get('/login-history/:username', checkAuthenticated, checkOwner, async (re
 });
 
 /* Unlock account - Owner only */
-router.post('/unlock-account', checkAuthenticated, checkOwner, async (req, res) => {
+router.post('/unlock-account', requireAuth, requireRole('Owner'), async (req, res) => {
     try {
         const { username } = req.body;
         
@@ -591,7 +593,7 @@ router.post('/unlock-account', checkAuthenticated, checkOwner, async (req, res) 
 });
 
 /* Export logs - Owner only */
-router.get('/export-logs', checkAuthenticated, checkOwner, async (req, res) => {
+router.get('/export-logs', requireAuth, requireRole('Owner'), async (req, res) => {
     try {
         const users = await User.find().select('-password');
         
