@@ -68,6 +68,11 @@
             <td class="popup-td">
                 <button class="add-order-btn" onclick="window.location.href = '/admin/create-order';">+ Add Order</button>
             </td>
+            {{#if (eq userStatus "Owner")}}
+            <td class="popup-td">
+                <button class="add-order-btn" onclick="window.location.href = '/admin/login-logs';">📋 View Logs</button>
+            </td>
+            {{/if}}
         </tr>
         <tr>
             <th class="popup-th">ControlID</th>

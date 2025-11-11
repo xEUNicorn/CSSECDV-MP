@@ -76,6 +76,20 @@ const sampleUsers = [
         secAns3: "$2b$12$iFZN1/dWlkUMp4znf6EK5.5K8Pyduts.WsgCoQJ8dYNFZIF6jHZcm", // Me - Favorite fictional character
         passwordHistory: [],
         lastChanged: "11-01-2025 01:10:04 pm" },
+
+    /* 7 - ADMIN OWNER */
+    {   userId: 100007,
+        username: "admin",
+        name: "Admin Owner",
+        password: "$2b$12$pFq1ESnL5cQ3cudaVFWc8uceRNjlZxa/0KoyrBglGh9T1Fqn7SGhC", //Admin123!
+        status: "Owner",
+        hubName: "Admin Hub",
+        securityQuestions: ["1", "2", "3"],
+        secAns1: "$2b$12$kU/p.FXg5pidk2rRntF3zeX7tfT91dtYowRebHSN77FEBZS7N6Myi", // Admin - First Pet's Name
+        secAns2: "$2b$12$Z6qbUY/48SUg/xHCVlN7heyUQbA6ke4wo7bleDIh4bOtEEenVOF6u", // Admin - Childhood Nickname
+        secAns3: "$2b$12$iFZN1/dWlkUMp4znf6EK5.5K8Pyduts.WsgCoQJ8dYNFZIF6jHZcm", // Admin - Favorite fictional character
+        passwordHistory: [],
+        lastChanged: "11-01-2025 01:10:04 pm" },
 ];
 
 const sampleOrders = [
