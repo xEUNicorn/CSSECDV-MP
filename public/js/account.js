@@ -116,16 +116,31 @@ async function checkInputs() {
         addError("Name is EMPTY!");
     }
 
+    console.log($.isNumeric(phoneNum))
+    var phoneBool = true; //check if phoneNum is empty or not
     if (phoneNum.trim() === "" || phoneNum.trim() === null) {
         check = false;
+        phoneBool = false;
         addError("Phone Number is EMPTY!");
-        if (check && !phoneNum.trim().startsWith('9')) {
-            check = false;
-            addError("Phone Number is INCORRECT FORMAT (Start with 9)!");
-        }
+        
     }
 
-    if (!validatePassword(true)) {
+    //check the phone number format
+    if (phoneBool && !$.isNumeric(phoneNum)) {
+        check = false;
+        addError("Phone Number should contain NUMERICAL characters only!");
+    } else if (phoneBool && !phoneNum.startsWith('9')) {
+        check = false;
+        addError("Phone Number is in INCORRECT FORMAT (Start with 9)!");
+    } else if (phoneBool && phoneNum.includes(' ')) {
+        check = false;
+        addError("Phone Number is in INCORRECT FORMAT (Remove the spaces)!");
+    } else if (phoneBool && phoneNum.length != 10) {
+        check = false;
+        addError("Phone Number is in INCORRECT FORMAT (Should be 10 digits long)!");
+    }
+
+    if (check && !validatePassword(true)) {
         check = false;
     }
 
@@ -230,7 +245,7 @@ function validatePassword(error) {
     }
 
     //RULE: Must not include your NAME or USERNAME
-    if (nameInPassword()) {
+    if (validated && nameInPassword()) {
         $('#rule-name').attr('src', '/img/valid.png')
     } else {
         $('#rule-name').attr('src', '/img/invalid.png')
@@ -280,9 +295,11 @@ function mixCharactersChecker(password, length) {
 */
 function nameInPassword() {
     const user = $('#username').val().toLowerCase();
-    const first = $('#firstname').val().toLowerCase();
-    const last = $('#lastname').val().toLowerCase();
+    const firstLast = $('#firstlast').val().toLowerCase();
     const pass = $('#pass').val().toLowerCase();
+
+    const first = firstLast.split(' ')[0]
+    const last = firstLast.split(' ')[1]
 
     const user4 = user.slice(0,4);
     const first4 = first.slice(0,4);
@@ -310,8 +327,8 @@ function addError(errorMsg) {
 */
 function disableChanges() {
     $('#username').prop('disabled', true);
-    $('#firstname').prop('disabled', true);
-    $('#lastname').prop('disabled', true);
+    $('#firstlast').prop('disabled', true);
+    $('#phone-number').prop('disabled', true);
     $('#pass').prop('disabled', true);
     $('#retype-pass').prop('disabled', true);
 }
@@ -369,11 +386,9 @@ async function addToDatabase() {
     try {
         const userId = await generateUserID();
         const username = $('#username').val().trim();
-        const firstname = $('#firstname').val().trim();
-        const lastname = $('#lastname').val().trim();
+        const name = $('#firstlast').val().trim();
+        const phoneNum = $('#phone-number').val().trim();
         const password = $('#pass').val();
-
-        const name = firstname + " " + lastname;
 
         const secQ1 = parseInt($('#question1').val());
         const secQ2 = parseInt($('#question2').val());
@@ -389,6 +404,7 @@ async function addToDatabase() {
             userId: userId,
             username: username,
             name: name,  // First Name Last Name (Format)
+            phoneNumber: phoneNum,
             password: password,
             securityQuestions: [secQ1, secQ2, secQ3], // Ex: ["1","2","4"]
             secAns1: ans1,

@@ -54,7 +54,7 @@ router.post('/unique-username', async (req, res) => {
 // used to add the initial information of the user to the database without the security questions
 router.post('/register', async (req, res) => {
     try {
-        const { userId, username, name, phoneNum, password, securityQuestions, secAns1, secAns2, secAns3, date } = req.body;
+        const { userId, username, name, phoneNumber, password, securityQuestions, secAns1, secAns2, secAns3, date } = req.body;
 
         const hashedPass = await hashPassword(password)
         const hashedsecAns1 = await hashPassword(secAns1)
@@ -66,7 +66,7 @@ router.post('/register', async (req, res) => {
             userId: userId,
             username,
             name,
-            phoneNum,
+            phoneNumber,
             password: hashedPass, 
             status: "Customer", // Default status
             securityQuestions,
