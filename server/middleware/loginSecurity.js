@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const logger = require('../utils/logger');
 
 // Maximum failed login attempts before locking
 const MAX_LOGIN_ATTEMPTS = 5;
@@ -45,7 +46,12 @@ async function recordFailedLogin(username) {
     const user = await User.findOne({ username });
     
     if (!user) {
-        return;
+        logger.warn({
+            event: 'LOGIN_FAIL_NOUSER',
+            username,
+            ip: 'unknown',
+            path: 'N/A'
+        });
     }
 
     const attempts = user.failedLoginAttempts + 1;
@@ -61,6 +67,14 @@ async function recordFailedLogin(username) {
     }
 
     await User.updateOne({ username }, { $set: updates });
+
+    logger.warn({
+        event   : 'ACCESS_CONTROL_FAIL',
+        type    : 'login',
+        username,
+        attempts,
+        locked  : updates.accountLocked || false
+    });
     
     return {
         attempts,
@@ -90,6 +104,8 @@ async function recordSuccessfulLogin(username, ipAddress) {
             }
         }
     );
+
+    logger.info({ event:'LOGIN_SUCCESS', username, ip:ipAddress });
 }
 
 /**
