@@ -7,31 +7,11 @@ const bcrypt = require('bcrypt');
 const Sessions = require('../models/Sessions.js');
 require('../config/passport.js')
 const logger   = require('../utils/logger');
+const { checkAuthenticated, checkEmployee, checkOwner } = require('../middleware/auth');  
 
 //const User = require('../models/User.js');
 const Order = require('../models/Order.js');
 const Update = require('../models/Update.js');
-
-checkAuthenticated = (req,res, next) => {
-    if(req.user){
-        return next();
-    }
-    res.redirect('/admin/login');
-}
-
-checkEmployee = (req, res, next) => {
-    if(req.user && !(req.user.status === 'Customer')){
-        return next();
-    }
-    res.status(403).send('Access denied');
-}
-
-checkOwner = (req, res, next) => {
-    if(req.user && req.user.status === 'Owner'){
-        return next();
-    }
-    res.status(403).send('Access denied. Owner privileges required.');
-}
 
 /* LOGIN */
 router.get('/', async (req, res) =>{
