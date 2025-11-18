@@ -5,9 +5,10 @@ const path = require('path');
 const app = express();
 const bodyParser = require('body-parser');
 const connectDB = require('./server/config/db');
+const logger = require('./server/utils/logger'); 
 
 const mongoose = require('mongoose');
-const { sampleUsers, sampleOrders, sampleUpdates } = require('./server/sample');
+const { sampleUsers, sampleOrders, sampleUpdates, sampleLogs } = require('./server/sample');
 const User = require('./server/models/User');
 const Order = require('./server/models/Order');
 const Update = require('./server/models/Update');
@@ -27,10 +28,12 @@ async function createSample() {
     await User.deleteMany(); // Clear existing
     await Order.deleteMany();
     await Update.deleteMany();
+    await Logs.deleteMany();
 
     await User.insertMany(sampleUsers);
     await Order.insertMany(sampleOrders);
     await Update.insertMany(sampleUpdates);
+    await Logs.insertMany();
 
     //can add log samples here
 }
@@ -95,6 +98,8 @@ app.use('/admin', require('./server/routes/admin.js'));
 app.use('/create_account', require('./server/routes/account.js')); // path for creating accounts
 app.use('/password', require('./server/routes/password.js'));
 app.use('/logs', require('./server/routes/logs.js'));       //path for doing whatever to the logs
+
+app.use('/logs', require('./server/routes/logs.js'));
 
 // 404 Error Handler - Must be last
 app.use((req, res, next) => {
