@@ -80,6 +80,15 @@ app.engine('hbs', engine({
     helpers: {
         eq: function(a, b) {
             return a === b;
+        },
+        formatDate: function(date) {
+            if (!date) return 'Never';
+            const d = new Date(date);
+            return d.toLocaleString();
+        },
+        lastLogin: function(loginHistory) {
+            if (!loginHistory || loginHistory.length === 0) return null;
+            return loginHistory[loginHistory.length - 1].timestamp;
         }
     },
     cache: false
