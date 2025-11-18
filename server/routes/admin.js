@@ -6,6 +6,7 @@ const passport = require('passport');
 const bcrypt = require('bcrypt');
 const Sessions = require('../models/Sessions.js');
 require('../config/passport.js')
+const logger   = require('../utils/logger');
 
 //const User = require('../models/User.js');
 const Order = require('../models/Order.js');
@@ -64,6 +65,13 @@ router.post('/login', async (req, res, next) => {
         }
 
         if (!user) { // alternative to failureRedirect but with custom message
+            logger.warn({
+                event: 'LOGIN_FAIL_NOUSER',
+                username: req.body.username,
+                ip: req.ip,
+                path: req.originalUrl
+            });
+
             return res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"admin", error: info.message});
         }
 
