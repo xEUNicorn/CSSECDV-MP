@@ -53,7 +53,7 @@ router.post('/login', async (req, res, next) => {
             return res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"search_parcel", error: info.message});
         }
 
-        if (user.status !== 'Customer') {
+        if (user.status !== 'Customer' && user.status !== 'Owner') {
             return res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"search_parcel", error: "Invalid username or password."});
         }
 
