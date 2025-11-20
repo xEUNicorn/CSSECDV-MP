@@ -111,6 +111,8 @@ async function checkInputs() {
         console.error("Error in checking username:", error);
     }
 
+    //start with a letter first and may contain letters, dot, hyphen and space
+    const nameRegex = /^[A-Za-z][A-Za-z.\-]*\s+[A-Za-z][A-Za-z.\-]*$/; 
     if (name.trim() === "") {
         check = false;
         addError("Name is EMPTY!");
@@ -122,22 +124,13 @@ async function checkInputs() {
         check = false;
         phoneBool = false;
         addError("Phone Number is EMPTY!");
-        
     }
 
     //check the phone number format
-    if (phoneBool && !$.isNumeric(phoneNum)) {
+    const phoneRegex = /^9\d{9}$/; // starts with 9, 10 digits long, numbers only
+    if (phoneBool && !phoneRegex.test(phoneNum)) {
         check = false;
-        addError("Phone Number should contain NUMERICAL characters only!");
-    } else if (phoneBool && !phoneNum.startsWith('9')) {
-        check = false;
-        addError("Phone Number is in INCORRECT FORMAT (Start with 9)!");
-    } else if (phoneBool && phoneNum.includes(' ')) {
-        check = false;
-        addError("Phone Number is in INCORRECT FORMAT (Remove the spaces)!");
-    } else if (phoneBool && phoneNum.length != 10) {
-        check = false;
-        addError("Phone Number is in INCORRECT FORMAT (Should be 10 digits long)!");
+        addError("Phone Number should be 10 digits long, starts with 9, and numbers only!");
     }
 
     if (check && !validatePassword(true)) {
