@@ -40,7 +40,8 @@ const verifyCallback = async (req, username, password, done) => {
         } else {
             console.log('Passwords do not match! Authentication failed.');
             // Record failed login attempt
-            const failInfo = await recordFailedLogin(username);
+            const ipAddress = req.ip || req.connection.remoteAddress;
+            const failInfo = await recordFailedLogin(username, ipAddress);
             if (failInfo && failInfo.locked) {
                 return done(null, false, { 
                     message: 'Too many failed login attempts. Account has been locked for 30 minutes.' 

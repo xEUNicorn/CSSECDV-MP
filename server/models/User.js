@@ -27,6 +27,8 @@ const UserSchema = new mongoose.Schema({
     },
     lockUntil: Date,           // When the account will be unlocked
     lastLoginAttempt: Date,    // Track last login attempt
+    lastLoginAttemptIP: String, // IP address of last login attempt
+    lastLoginAttemptSuccess: Boolean, // Whether last attempt was successful
     loginHistory: [{           // Track successful logins
         timestamp: Date,
         ipAddress: String

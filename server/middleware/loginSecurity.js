@@ -41,7 +41,7 @@ async function checkAccountLock(username) {
 /**
  * Record failed login attempt
  */
-async function recordFailedLogin(username) {
+async function recordFailedLogin(username, ipAddress) {
     const user = await User.findOne({ username });
     
     if (!user) {
@@ -51,7 +51,9 @@ async function recordFailedLogin(username) {
     const attempts = user.failedLoginAttempts + 1;
     const updates = {
         failedLoginAttempts: attempts,
-        lastLoginAttempt: new Date()
+        lastLoginAttempt: new Date(),
+        lastLoginAttemptIP: ipAddress || 'unknown',
+        lastLoginAttemptSuccess: false
     };
 
     // Lock account if max attempts reached
@@ -80,7 +82,9 @@ async function recordSuccessfulLogin(username, ipAddress) {
                 failedLoginAttempts: 0,
                 accountLocked: false,
                 lockUntil: null,
-                lastLoginAttempt: new Date()
+                lastLoginAttempt: new Date(),
+                lastLoginAttemptIP: ipAddress || 'unknown',
+                lastLoginAttemptSuccess: true
             },
             $push: {
                 loginHistory: {
@@ -90,6 +94,50 @@ async function recordSuccessfulLogin(username, ipAddress) {
             }
         }
     );
+}
+
+/**
+ * Get last login attempt information for notification
+ * This should be called BEFORE recording a successful login to get the previous attempt
+ */
+async function getLastLoginAttemptInfo(username) {
+    const user = await User.findOne({ username }).select('lastLoginAttempt lastLoginAttemptIP lastLoginAttemptSuccess loginHistory');
+    
+    if (!user) {
+        return null;
+    }
+
+    // Check if there's a previous successful login in history (before the current one)
+    // We want the second-to-last entry since the last one will be the current login
+    if (user.loginHistory && user.loginHistory.length > 1) {
+        // Get the second-to-last successful login from history (previous login)
+        const previousLogin = user.loginHistory[user.loginHistory.length - 2];
+        return {
+            timestamp: previousLogin.timestamp,
+            ipAddress: previousLogin.ipAddress,
+            success: true
+        };
+    } else if (user.loginHistory && user.loginHistory.length === 1) {
+        // First successful login - check if there was a failed attempt before
+        if (user.lastLoginAttempt && !user.lastLoginAttemptSuccess) {
+            return {
+                timestamp: user.lastLoginAttempt,
+                ipAddress: user.lastLoginAttemptIP || 'unknown',
+                success: false
+            };
+        }
+        // First login ever, no previous attempt to show
+        return null;
+    } else if (user.lastLoginAttempt) {
+        // If there was a previous attempt (could be failed) and no successful logins yet
+        return {
+            timestamp: user.lastLoginAttempt,
+            ipAddress: user.lastLoginAttemptIP || 'unknown',
+            success: user.lastLoginAttemptSuccess || false
+        };
+    }
+    
+    return null;
 }
 
 /**
@@ -190,6 +238,7 @@ module.exports = {
     checkAccountLock,
     recordFailedLogin,
     recordSuccessfulLogin,
+    getLastLoginAttemptInfo,
     canChangePassword,
     formatDateTime,
     hashPassword,

@@ -1,0 +1,166 @@
+/* Notification Bar Styles */
+.notification-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff3cd;
+    border-bottom: 2px solid #ffc107;
+    padding: 12px 20px;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.notification-icon {
+    font-size: 20px;
+    margin-right: 12px;
+}
+
+.notification-text {
+    flex: 1;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #856404;
+    line-height: 1.5;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #856404;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 15px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.notification-close:hover {
+    color: #533f03;
+}
+
+/* User Dropdown Styles */
+#user-menu-container {
+    position: relative;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 280px;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-dropdown-header {
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.user-name {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.user-username {
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    color: #666;
+}
+
+.user-dropdown-divider {
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 8px 0;
+}
+
+.user-dropdown-item {
+    padding: 12px 16px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user-dropdown-link {
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.user-dropdown-link:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdown-label {
+    font-weight: 500;
+    color: #666;
+}
+
+.dropdown-value {
+    color: #333;
+    font-size: 13px;
+}
+
+.dropdown-icon {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+/* Adjust body padding when notification is shown */
+body.has-notification {
+    padding-top: 60px;
+}
+
+/* For admin layout - adjust navbar position when notification is shown */
+body.has-notification #navbar {
+    top: 60px;
+}
+

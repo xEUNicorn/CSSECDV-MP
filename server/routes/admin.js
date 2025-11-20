@@ -7,7 +7,11 @@ const bcrypt = require('bcrypt');
 const Sessions = require('../models/Sessions.js');
 const { formatDateTime } = require('../middleware/loginSecurity');
 const { requireAuth, requireRole } = require('../middleware/auth');
+const setViewData = require('../middleware/viewData');
 require('../config/passport.js')
+
+// Apply view data middleware to all admin routes
+router.use(setViewData);
 
 //const User = require('../models/User.js');
 const Order = require('../models/Order.js');
@@ -58,9 +62,8 @@ router.post('/login', passport.authenticate('local', {
 });
 */
 
-//manual version of the function above
 router.post('/login', async (req, res, next) => {
-    passport.authenticate('local', (error, user, info) => {
+    passport.authenticate('local', async (error, user, info) => {
         if (error) {
             return next(error);
         }
@@ -69,10 +72,22 @@ router.post('/login', async (req, res, next) => {
             return res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"admin", error: info.message});
         }
 
-        // alternative to successRedirect
+        if (user.status !== 'Employee' && user.status !== 'Owner') {
+            return res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"admin", error: "Invalid username or password."});
+        }
+
+        // Get last login attempt info before logging in
+        const { getLastLoginAttemptInfo } = require('../middleware/loginSecurity');
+        const lastAttemptInfo = await getLastLoginAttemptInfo(user.username);
+        
+
         req.logIn(user, (err) => {
             if (err) {
                 return next(err);
+            }
+            // Store last login attempt info in session for notification
+            if (lastAttemptInfo) {
+                req.session.lastLoginAttemptInfo = lastAttemptInfo;
             }
             return res.redirect('/admin/view-orders');
         })
@@ -82,11 +97,10 @@ router.post('/login', async (req, res, next) => {
 /* === */
 
 
-/* SUMMARY OF ORDERS */
 router.get('/view-orders', checkAuthenticated, checkEmployee, async (req, res) =>{
     try {
         const orders = await Order.find();
-        res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders, userStatus: req.user.status });
+        res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders, userStatus: req.user.status, user: req.user });
     }
     catch (error)
     { 

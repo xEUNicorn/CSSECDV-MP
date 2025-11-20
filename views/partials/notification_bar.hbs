@@ -1,0 +1,49 @@
+{{#if lastLoginAttemptInfo}}
+<div id="login-notification-bar" class="notification-bar">
+    <div class="notification-content">
+        <span class="notification-icon">🔔</span>
+        <span class="notification-text">
+            {{#if lastLoginAttemptInfo.success}}
+                Last successful login: {{formatDate lastLoginAttemptInfo.timestamp}} from IP: {{lastLoginAttemptInfo.ipAddress}}
+            {{else}}
+                Last login attempt (unsuccessful): {{formatDate lastLoginAttemptInfo.timestamp}} from IP: {{lastLoginAttemptInfo.ipAddress}}
+            {{/if}}
+        </span>
+        <button class="notification-close" onclick="closeNotification()">×</button>
+    </div>
+</div>
+<script>
+    function closeNotification() {
+        const notification = document.getElementById('login-notification-bar');
+        if (notification) {
+            notification.style.animation = 'slideUp 0.3s ease-out';
+            setTimeout(() => {
+                notification.remove();
+                document.body.classList.remove('has-notification');
+            }, 300);
+        }
+    }
+    
+    // Add slideUp animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideUp {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Add has-notification class to body when notification is shown
+    if (document.getElementById('login-notification-bar')) {
+        document.body.classList.add('has-notification');
+    }
+</script>
+{{/if}}
+

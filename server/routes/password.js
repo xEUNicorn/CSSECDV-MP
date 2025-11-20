@@ -4,6 +4,10 @@ const router = express.Router();
 const User = require('../models/User');
 const { canChangePassword, formatDateTime, hashPassword, compareHashes } = require('../middleware/loginSecurity');
 const { requireAuth } = require('../middleware/auth');
+const setViewData = require('../middleware/viewData');
+
+// Apply view data middleware so templates receive `user` and notifications
+router.use(setViewData);
 
 // Middleware to check if user is authenticated
 const checkAuthenticated = (req, res, next) => {
@@ -64,7 +68,14 @@ router.post('/verify-password', requireAuth, async (req, res) => {
         if (!passwordMatches) {
             return res.status(401).json({ error: 'Invalid password' });
         }
-        
+
+        // Mark the session as recently re-authenticated (used by /change-password)
+        if (req.session) {
+            req.session.reAuthTime = Date.now();
+        }
+
+        // Respond with a clear success object the client expects
+        return res.json({ success: true });
     } catch (error) {
         console.error('Password verification error:', error);
         res.status(500).json({ error: 'Server error' });
