@@ -263,6 +263,7 @@ function nameInPassword() {
 */
 function addError(errorMsg) {
     $('.popup-table').append("<tr class='popup-tr'><td>"+ errorMsg + "</td></tr>");
+    logValidationFail(errorMsg);
 }
 
 /*  Keeps the username, first name, last name and password in a locked phase to prevent changes
@@ -436,4 +437,18 @@ function clear() {
     $('#answer2').val('');
     $('#question3').val('');
     $('#answer3').val('');
+}
+
+function logValidationFail(message) {
+  fetch('/logs', {
+    method : 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body   : JSON.stringify({
+      category : 'WARN',
+      event    : 'UI_VALIDATION_FAIL',
+      path     : window.location.pathname,
+      detail   : message
+    })
+  })
+  .catch(() => window.location.href = '/error_generic');
 }
