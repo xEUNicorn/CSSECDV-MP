@@ -13,9 +13,10 @@ module.exports = function errorHandler(err, req, res, _next) {
   if (req.accepts('json')) {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
-  res.status(500).render('error404', {
+  res.status(500).render('error_generic', {
     layout: false,
-    title : '500 – Internal Server Error | ESMC',
-    css   : 'error404'
+    title : 'Something Went Wrong | ESMC',
+    css   : 'error_generic'
   });
 };
+
