@@ -101,6 +101,14 @@ app.use('/logs', require('./server/routes/logs.js'));       //path for doing wha
 
 app.use('/logs', require('./server/routes/logs.js'));
 
+app.get('/error_generic', (_req, res) => {
+  res.status(500).render('error_generic', {   
+    layout: false,
+    title : 'Something Went Wrong | ESMC',
+    css   : 'error_generic'
+  });
+});
+
 // 404 Error Handler - Must be last
 app.use((req, res, next) => {
     res.status(404).render('error404', {
