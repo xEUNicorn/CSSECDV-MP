@@ -285,17 +285,17 @@ router.post('/add-order', checkAuthenticated, checkEmployee, async (req, res) =>
         var floatDiscount = parseFloat(discount);
         var floatTotal = parseFloat(total);
 
-        const sender = intSenderNum;
-        const receiver = intReceiverNum;
+        const userSender = await User.findOne({ phoneNumber: intSenderNum});
+        const userReceiver = await User.findOne({ phoneNumber: intReceiverNum});
+        const users = [userSender.userId, userReceiver.userId]
         
         var addOrder = new Order({
-            senderId : sender,
-            receiverId : receiver,
             orderId : orderId,
             senderName : senderName,
             receiverName : receiverName,
             senderNum : intSenderNum,
             receiverNum : intReceiverNum,
+            userIds : users,
 
             itemDesc : itemDesc,
             itemNum : itemNum,

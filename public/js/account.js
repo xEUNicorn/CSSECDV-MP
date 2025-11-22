@@ -318,6 +318,10 @@ function nameInPassword() {
     const first = firstLast.split(' ')[0]
     const last = firstLast.split(' ')[1]
 
+    if (!(first && last)) {
+        return false;
+    }
+
     const user4 = user.slice(0,4);
     const first4 = first.slice(0,4);
     const last4 = last.slice(0,4);
@@ -328,8 +332,8 @@ function nameInPassword() {
         (first && pass.includes(first4)) || (first && pass.includes(first)) ||
         (last && pass.includes(last4)) || (last && pass.includes(last))) {
             checker = false;
-        }
-
+    }
+    
     return checker
 }
 

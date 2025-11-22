@@ -107,6 +107,7 @@ const sampleOrders = [
         receiverName : "Juan Perez",
         senderNum : 9121231234,
         receiverNum : 9121234567,
+        userIds : [100001, 100002],
 
         itemDesc : ["Item1", "Item2"],
         itemNum : [1, 1],
@@ -127,12 +128,12 @@ const sampleOrders = [
     },
 
     /* 2 */
-    {
-        orderId: "FRI98765",
+    {   orderId: "FRI98765",
         senderName: "Joseph Santos",
         receiverName: "Juan Perez",
         senderNum: 9124446574,
         receiverNum: 9121234567,
+        userIds : [100003, 100002],
 
         itemDesc: ["Item11", "Item22"],
         itemNum: [3, 5],
@@ -158,6 +159,7 @@ const sampleOrders = [
         receiverName : "Juanita Abagnale",
         senderNum : 9121231234,
         receiverNum : 9123331122,
+        userIds : [100001, 100004],
 
         itemDesc : ["Item12"],
         itemNum : [5],

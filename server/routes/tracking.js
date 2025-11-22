@@ -12,6 +12,13 @@ require('../config/passport');
 // Apply view data middleware to all tracking routes
 router.use(setViewData);
 
+checkAuthenticated = (req,res, next) => {
+    if(req.user){
+        return next();
+    }
+    res.redirect('/search_parcel/login');
+}
+
 router.get('/', (req, res, next) => {
     if (!req.user) {
         return res.redirect('/search_parcel/login');
@@ -75,15 +82,13 @@ router.post('/login', async (req, res, next) => {
     })(req, res, next); // let the request proceed instead of just checking it
 })
 
-router.post('/', async (req, res) =>{
+router.post('/', checkAuthenticated, async (req, res) =>{
     try {
         const { id } = req.body;
-        if(!req.user) { 
-            return res.status(401).json({exists:false}); 
-        }  
+ 
         const trackerId = await Order.findOne({
             orderId : id,
-            userID  : req.user.employeeId
+            userIds : req.user.userId
         });
         res.json({ exists: Boolean(trackerId) });
     } catch (error) {
@@ -92,16 +97,13 @@ router.post('/', async (req, res) =>{
     }
 })
 
-router.get('/track=:id', async (req, res) =>{
-    if(!req.user) {
-        return res.redirect('/search_parcel/login'); 
-    }
+router.get('/track=:id', checkAuthenticated, async (req, res) =>{
     const id = req.params.id;
     console.log(id);
     try {
         const order = await Order.findOne({ 
             orderId : id, 
-            userID : req.user.employeeId
+            userIds : req.user.userId
         });
         if (!order) {
             return res.redirect('/search_parcel');
@@ -118,15 +120,12 @@ router.get('/track=:id', async (req, res) =>{
     }
 })
 
-router.get('/track=:id/more-details', async (req, res) =>{
-    if(!req.user){ 
-        return res.redirect('/search_parcel/login'); 
-    }
+router.get('/track=:id/more-details', checkAuthenticated, async (req, res) =>{
     const id = req.params.id;
     try {
         const order = await Order.findOne({ 
             orderId: id,
-            userID : req.user.employeeId
+            userIds : req.user.userId
         });
         if (!order) {
             return res.redirect('/search_parcel');
