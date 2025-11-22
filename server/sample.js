@@ -1,8 +1,9 @@
 const sampleUsers = [
     /* 1 */
     {   userId: 100001,
-        username: "@johnniecruz",
+        username: "johnnie@cruz",
         name: "John Cruz",
+        phoneNumber: 9121231234,
         password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu", //String
         status: "Customer",
         securityQuestions: ["1", "2", "3"],
@@ -16,6 +17,7 @@ const sampleUsers = [
     {   userId: 100002,
         username: "Juannn",
         name: "Juan Perez",
+        phoneNumber: 9121234567,
         password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu", //String
         status: "Customer",
         securityQuestions: ["2", "3", "4"],
@@ -31,6 +33,7 @@ const sampleUsers = [
     {   userId: 100003,
         username: "Josephbro",
         name: "Joseph Santos",
+        phoneNumber: 9124446574,
         password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu", //String
         status: "Customer",
         securityQuestions: ["3", "4", "5"],
@@ -44,6 +47,7 @@ const sampleUsers = [
     {   userId: 100004,
         username: "JuanitaGirlie",
         name: "Juanita Abagnale",
+        phoneNumber: 9123331122,
         password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu", //String
         status: "Customer",
         securityQuestions: ["3", "1", "5"],
@@ -57,6 +61,7 @@ const sampleUsers = [
     {   userId: 100005,
         username: "Manila Branch",
         name: "Man ila",
+        phoneNumber: 9192779950, //SMART Support Line
         password: "$2a$12$g0df/6XG8TvZHf7xa4U/UuhzvFOQQOQ8RqxkH4Afhia2U8Qadd4r.", //Manila123!
         status: "Employee",
         securityQuestions: ["3", "4", "5"],
@@ -70,6 +75,7 @@ const sampleUsers = [
     {   userId: 100006,
         username: "realtester",
         name: "Real Tester",
+        phoneNumber: 9987654321,
         password: "$2b$12$o1g4ALYtWGnBzCTTyys/5uxBxrlEI7FncZ5PAzNd1cVz/Tg6hmmR.", //Sample100!
         status: "Customer",
         securityQuestions: ["1", "3", "5"],
@@ -83,6 +89,7 @@ const sampleUsers = [
     {   userId: 100007,
         username: "admin",
         name: "Admin Owner",
+        phoneNumber: 9174600084, //GLOBE Support Line
         password: "$2a$12$uo7obAjU2b.vLI5Q0WO9p.mr6wU/D4Es979GrWDfcvdqLu60nuGoO", //ESMCOwner@2006
         status: "Owner",
         securityQuestions: ["1", "2", "3"],
@@ -125,7 +132,7 @@ const sampleOrders = [
         senderName: "Joseph Santos",
         receiverName: "Juan Perez",
         senderNum: 9124446574,
-        receiverNum: 9122222222,
+        receiverNum: 9121234567,
 
         itemDesc: ["Item11", "Item22"],
         itemNum: [3, 5],
@@ -149,7 +156,7 @@ const sampleOrders = [
     {   orderId : "THU11111",
         senderName : "John Cruz",
         receiverName : "Juanita Abagnale",
-        senderNum : 9129874567,
+        senderNum : 9121231234,
         receiverNum : 9123331122,
 
         itemDesc : ["Item12"],

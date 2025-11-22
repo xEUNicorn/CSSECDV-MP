@@ -105,20 +105,30 @@ async function checkInputs() {
     var check = true; //check if all inputs are valid or not
     var userInfo = { username: username }
 
-    try {
-        check = await checkUsername(userInfo);
-    } catch (error) {
-        console.error("Error in checking username:", error);
+    //must not start with special characters and must be 5 to 20 characters long
+    const usernameRegex = /^[A-Za-z0-9].{4,19}$/; 
+    var userBool = true; //check if username is in correct format or not
+    if (username.trim() === "" || !usernameRegex.test(username)) {
+        check = false;
+        userBool = false;
+        addError("Username must not start with special characters and 5-20 characters long only!");
     }
 
+    if (userBool) {
+        try {
+            check = await checkUsername(userInfo);
+        } catch (error) {
+            console.error("Error in checking username:", error);
+        }
+    }
+    
     //start with a letter first and may contain letters, dot, hyphen and space
     const nameRegex = /^[A-Za-z][A-Za-z.\-]*\s+[A-Za-z][A-Za-z.\-]*$/; 
-    if (name.trim() === "") {
+    if (name.trim() === "" || !nameRegex.test(name)) {
         check = false;
-        addError("Name is EMPTY!");
+        addError("Name is in INCORRECT FORMAT!");
     }
 
-    console.log($.isNumeric(phoneNum))
     var phoneBool = true; //check if phoneNum is empty or not
     if (phoneNum.trim() === "" || phoneNum.trim() === null) {
         check = false;
