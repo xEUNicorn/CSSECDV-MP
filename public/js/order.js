@@ -167,7 +167,7 @@ function validateInput() { //discount is optional
         addError("SENDER NUMBER is empty!");
     } else if (checkNumber(senderNum)) {
         noError = false;
-        addError("SENDER NUMBER is in incorrect format! [Follow 9XX XXX XXXX where X is any digit.]");
+        addError("SENDER NUMBER is in incorrect format! [Follow 9XXXXXXXXX where X is any digit.]");
     }
     
     if (checkEmpty(receiver)) {
@@ -180,7 +180,7 @@ function validateInput() { //discount is optional
         addError("RECEIVER NUMBER is empty!");
     } else if (checkNumber(receiverNum)) {
         noError = false;
-        addError("RECEIVER NUMBER is in incorrect format! [Follow 9XX XXX XXXX where X is any digit.]");
+        addError("RECEIVER NUMBER is in incorrect format! [Follow 9XXXXXXXXX where X is any digit.]");
     }
 
     if (checkEmpty(date)) {
@@ -285,7 +285,7 @@ function checkEmpty(value) {
 }
 
 function checkNumber(value) {
-    const regex = /^9\d{2} \d{3} \d{4}$/;
+    const regex = /^9\d{9}$/;
     if (typeof value === 'string' && regex.test(value)) {
         return false;   //this means that there is no error
     }
@@ -374,9 +374,9 @@ async function addToDatabase() {
     try {
         const ID = await generateTrackerID();
         const sender = $('#inputSender').val();
-        const senderNum = parseInt($('#inputSenderNum').val().replace(/\s+/g, ''), 10);
+        const senderNum = parseInt($('#inputSenderNum').val(), 10);
         const receiver = $('#inputReceiver').val();
-        const receiverNum = parseInt($('#inputReceiverNum').val().replace(/\s+/g, ''), 10);
+        const receiverNum = parseInt($('#inputReceiverNum').val(), 10);
         
         const date = $('#inputDate').val();
         const branch = $('#inputBranch').val();

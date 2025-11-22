@@ -287,7 +287,13 @@ router.post('/add-order', checkAuthenticated, checkEmployee, async (req, res) =>
 
         const userSender = await User.findOne({ phoneNumber: intSenderNum});
         const userReceiver = await User.findOne({ phoneNumber: intReceiverNum});
-        const users = [userSender.userId, userReceiver.userId]
+        var users = []
+        if (userSender) {
+            users.push(userSender.userId)
+        }
+        if (userReceiver) {
+            users.push(userReceiver.userId)
+        }
         
         var addOrder = new Order({
             orderId : orderId,
