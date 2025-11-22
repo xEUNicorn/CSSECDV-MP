@@ -56,9 +56,23 @@ $(document).ready(function() {
     });
 
     /* FORGOT PASSWORD */
+    $('#verify-error').hide()
+    $('#right-first-display').hide();
+    $('#right-second-display').hide();
+    $('#change-pass-error').hide()
+    $('#left-second-display').hide();
+
     $('#verify-username-identity').click(function() { 
         verifyUsername(); //verify user name button
     });
+
+    $('#go-back-btn').click(function() { 
+        const nextPath = $('#forgot-path').val()
+        setTimeout(function() {
+            window.location.href = '/' + nextPath + '/login';
+        }, 200); //go back to login page
+    });
+    
 
     $('#verify-identity').click(function() { 
         verifySecurityAnswers(); //verify security answers button
@@ -505,16 +519,22 @@ function clear() {
 
 /*  gets user security questions they chose and display them
 */
-function verifyUsername() {
+async function verifyUsername() {
     const username = $('#verify-username').val()
     var userInfo = { username: username }
 
-    $.post('/password/verify-username', userInfo)
-        .then(response => {
-            if (response.exists) {
+    try {
+        const response = await $.post('/password/verify-username', userInfo);
+        if (response.exists) {
+            const checkLast = await checkLastChanged(userInfo)
+            if (!checkLast) { //check if username can change password or not
+                $('#change-pass-error').show()
+                $('#verify-username-identity').hide()
+            } else {
                 var quesText1 = secQuestionText(response.questions[0])
                 var quesText2 = secQuestionText(response.questions[1])
 
+                $('#change-pass-error').hide()
                 $('#verify-error').hide()
                 $('#verify-username-identity').hide()
                 $('#right-first-display').show();
@@ -525,10 +545,29 @@ function verifyUsername() {
                 $('#name-holder').data("secret", response.name); //put the name of the user in secret
                 $('#verify-username').prop('disabled', true);
             }
+        }
+        else {
+            $('#verify-error').hide()
+            forgotErrorMessage("Invalid Username")
+            $('#right-first-display').hide();
+        }
+    } catch (errorMsg) {
+        console.error(errorMsg);
+        return 0;
+    }
+}
+
+/*  checks if the password can be changed or not
+*/
+function checkLastChanged(userInfo) {
+    return $.post('/password/check-change', userInfo)
+        .then(response => {
+            console.log(response.change)
+            if (response.change) {    
+                return true; //can change password
+            }
             else {
-                $('#verify-error').hide()
-                forgotErrorMessage("Invalid Username")
-                $('#right-first-display').hide();
+                return false;
             }
         })
         .catch(errorMsg => {
@@ -742,7 +781,7 @@ async function checkPasswordInputs() {
     return check;
 }
 
-/*  checks if the username exists to the database
+/*  checks if the password is already used before
 */
 function checkPreviousPassword(userInfo) {
     return $.post('/password/check-previous-passwords', userInfo)
@@ -762,7 +801,7 @@ function checkPreviousPassword(userInfo) {
         })
 }
 
-/*  adds all information needed to create an account and saves it to the database
+/*  updates password in the database after all confirmation
 */
 async function updatePassword() {
     try {

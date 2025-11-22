@@ -64,7 +64,7 @@ router.post('/verify-password', requireAuth, async (req, res) => {
         }
 
         // Verify password
-        const passwordMatches = await bcrypt.compare(password, user.password);
+        const passwordMatches = await compareHashes(password, user.password);
         if (!passwordMatches) {
             return res.status(401).json({ error: 'Invalid password' });
         }
@@ -95,7 +95,7 @@ router.post('/change-password', requireAuth, checkRecentAuth, async (req, res) =
         }
 
         // Verify current password
-        const currentMatches = await bcrypt.compare(currentPassword, user.password);
+        const currentMatches = await compareHashes(currentPassword, user.password);
         if (!currentMatches) {
             return res.status(401).json({ error: 'Current password is incorrect' });
         }
@@ -236,6 +236,22 @@ router.post('/verify-username', async (req, res) =>{
 })
 
 /**
+ * Check if user is able to change password based on their last change
+ */
+router.post('/check-change', async (req, res) => {
+    try {
+        const { username } = req.body;
+        const user = await User.findOne({ username: username }); //user exists
+        const canChange = canChangePassword(user.lastChanged);
+        
+        res.json({success: true, change: canChange});
+    } catch (error) {
+        console.error('Error checking password eligibility:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+/**
  * Verify Security Answers based on the Security Questions presented from user
  */
 router.post('/verify-security-answers', async (req, res) =>{
@@ -288,7 +304,7 @@ router.post('/verify-security-answers', async (req, res) =>{
 })
 
 /**
- * Verify Security Answers based on the Security Questions presented from user
+ * Check the previous passwords of the user to see if new password matches with one of them
  */
 router.post('/check-previous-passwords', async (req, res) =>{
     try {
