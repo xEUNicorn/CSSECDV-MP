@@ -21,10 +21,18 @@ const checkAuthenticated = (req, res, next) => {
  * Render change password page
  */
 router.get('/change', requireAuth, (req, res) => {
+    const pathFrom = req.query.from; //when going here, it is /change?from=...
+
+    if (pathFrom) {
+        req.session.from = pathFrom; //extract the from part and save it
+        return res.redirect('/password/change'); //go back and render the clean version
+    }
+
     res.render('change_password', {
         layout: 'admin.hbs',
         title: 'Change Password | ESMC',
-        css: 'change_password'
+        css: 'change_password',
+        path: req.session.from || null
     });
 });
 

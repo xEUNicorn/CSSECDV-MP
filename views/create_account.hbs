@@ -46,13 +46,13 @@
                 <div class="flex-parent" id="right-flex-parent" id="inputs">
                     <div class="container-inputs">
                         <input type="hidden" id="path" value="{{path}}">
-                        <input type="text" placeholder="Username" name="username" id="username" required>
+                        <input type="text" placeholder="Username" name="username" id="username" minlength="5" maxlength="20" required>
                         <h4 class="create-title">Username (5 to 20 characters only)</h4>
                         <br>
-                        <input type="text" placeholder="FirstName LastName" name="firstlast" id="firstlast" required>
+                        <input type="text" placeholder="FirstName LastName" name="firstlast" id="firstlast" minlength="1" required>
                         <h4 class="create-title">Name (Format: FirstName LastName)</h4>
                         <br>
-                        <input type="tel" placeholder="9123456789" name="phone-number" id="phone-number" required>
+                        <input type="tel" placeholder="9123456789" name="phone-number" id="phone-number" minlength="10" maxlength="10" required>
                         <h4 class="create-title">Phone Number (Format: 9XXXXXXXXX)</h4>
                         <br>
                         
@@ -64,7 +64,7 @@
                         <br>
                         
                         <div class="eye-div" id="eye-div-retype" style="cursor:pointer">
-                            <input id="retype-pass" type="password" placeholder="********" name="retype-pass" required>
+                            <input id="retype-pass" type="password" placeholder="********" name="retype-pass" minlength="10" required>
                             <i class="fas fa-eye"></i>
                         </div>
                         <h4 class="create-title">Retype Password</h4>
@@ -107,7 +107,7 @@
                             <option value="4">Name of the first school you attended</option>
                             <option value="5">Favorite fictional character</option>
                         </select>
-                        <input type="text" placeholder="Answer..." name="answer1" id="answer1" required>
+                        <input type="text" placeholder="Answer..." name="answer1" id="answer1" minlength="1" required>
                         <br> <br>
                         <select name="ques2" id="question2" >
                             <option value="">&#40Select Question&#41</option>
@@ -117,7 +117,7 @@
                             <option value="4">Name of the first school you attended</option>
                             <option value="5">Favorite fictional character</option>
                         </select>
-                        <input type="text" placeholder="Answer..." name="answer2" id="answer2" required>
+                        <input type="text" placeholder="Answer..." name="answer2" id="answer2" minlength="1" required>
                         <br> <br>
                         <select name="ques3" id="question3" >
                             <option value="">&#40Select Question&#41</option>
@@ -127,7 +127,7 @@
                             <option value="4">Name of the first school you attended</option>
                             <option value="5">Favorite fictional character</option>
                         </select>
-                        <input type="text" placeholder="Answer..." name="answer3" id="answer3" required>
+                        <input type="text" placeholder="Answer..." name="answer3" id="answer3" minlength="1" required>
                         <br>
                     </div>
                 </div>
