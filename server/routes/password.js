@@ -83,7 +83,7 @@ router.post('/verify-password', requireAuth, async (req, res) => {
         }
 
         // Respond with a clear success object the client expects
-        return res.json({ success: true });
+        return res.json({ success: true, name: user.name, username: user.username });
     } catch (error) {
         console.error('Password verification error:', error);
         res.status(500).json({ error: 'Server error' });
