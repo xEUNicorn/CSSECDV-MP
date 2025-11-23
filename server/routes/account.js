@@ -2,6 +2,9 @@ const express = require('express');
 const path = require('path');
 const router = express.Router();
 const { hashPassword } = require('../middleware/loginSecurity');
+const { body } = require('express-validator');
+const validate = require('../middleware/validation');
+
 
 const User = require('../models/User.js');
 
@@ -52,7 +55,21 @@ router.post('/unique-username', async (req, res) => {
 })
 
 // used to add the initial information of the user to the database without the security questions
-router.post('/register', async (req, res) => {
+router.post('/register',  [
+    body('username')
+      .trim()
+      .isLength({ min: 3 })
+      .withMessage('Username must be at least 3 characters long'),
+    body('password')
+      .isStrongPassword()
+      .withMessage('Password must contain upper, lower, number & symbol'),
+    body('name')
+      .notEmpty()
+      .withMessage('Name is required'),
+    body('userId')
+      .isNumeric()
+      .withMessage('User ID must be numeric')
+   ], validate, async (req, res) => {
     try {
         const { userId, username, name, phoneNumber, password, securityQuestions, secAns1, secAns2, secAns3, date } = req.body;
 

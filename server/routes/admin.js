@@ -9,6 +9,8 @@ const { formatDateTime } = require('../middleware/loginSecurity');
 const { requireAuth, requireRole } = require('../middleware/auth');
 const setViewData = require('../middleware/viewData');
 require('../config/passport.js')
+const logger   = require('../utils/logger');
+const { checkAuthenticated, checkEmployee, checkOwner } = require('../middleware/auth');  
 
 // Apply view data middleware to all admin routes
 router.use(setViewData);
@@ -16,27 +18,6 @@ router.use(setViewData);
 //const User = require('../models/User.js');
 const Order = require('../models/Order.js');
 const Update = require('../models/Update.js');
-
-checkAuthenticated = (req,res, next) => {
-    if(req.user){
-        return next();
-    }
-    res.redirect('/admin/login');
-}
-
-checkEmployee = (req, res, next) => {
-    if(req.user && !(req.user.status === 'Customer')){
-        return next();
-    }
-    res.status(403).send('Access denied');
-}
-
-checkOwner = (req, res, next) => {
-    if(req.user && req.user.status === 'Owner'){
-        return next();
-    }
-    res.status(403).send('Access denied. Owner privileges required.');
-}
 
 /* LOGIN */
 router.get('/', async (req, res) =>{
@@ -69,6 +50,13 @@ router.post('/login', async (req, res, next) => {
         }
 
         if (!user) { // alternative to failureRedirect but with custom message
+            logger.warn({
+                event: 'LOGIN_FAIL_NOUSER',
+                username: req.body.username,
+                ip: req.ip,
+                path: req.originalUrl
+            });
+
             return res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"admin", error: info.message});
         }
 

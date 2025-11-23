@@ -1,3 +1,5 @@
+const logger = require('../utils/logger');
+
 const ensureAuthenticated = (req) => {
     if (typeof req.isAuthenticated === 'function') {
         return req.isAuthenticated();
@@ -20,6 +22,8 @@ function requireAuth(req, res, next) {
     if (req.accepts('html')) {
         return redirectToLogin(req, res);
     }
+  
+    logger.warn({ event:'ACCESS_DENIED', reason:'Unauthenticated', ip:req.ip, path:req.originalUrl });
 
     return res.status(401).json({ error: 'Authentication required.' });
 }
@@ -40,6 +44,8 @@ function requireRole(...roles) {
         }
 
         if (req.accepts('html')) {
+            logger.warn({ event:'ACCESS_DENIED', reason:'User is not included in the permissions list',
+                user:req.user?.username, ip:req.ip, path:req.originalUrl });
             return res.status(403).render('error_generic', {
                 layout: false,
                 css: 'error_generic',
@@ -49,7 +55,9 @@ function requireRole(...roles) {
                 message: 'You do not have permission to access this resource.'
             });
         }
-
+        
+        logger.warn({ event:'ACCESS_DENIED', reason:'User is not included in the permissions list',
+                user:req.user?.username, ip:req.ip, path:req.originalUrl });
         return res.status(403).json({ error: 'Access denied.' });
     };
 }
