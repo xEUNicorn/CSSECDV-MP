@@ -5,7 +5,6 @@ const { hashPassword } = require('../middleware/loginSecurity');
 const { body } = require('express-validator');
 const validate = require('../middleware/validation');
 
-
 const User = require('../models/User.js');
 
 // view of the create account page

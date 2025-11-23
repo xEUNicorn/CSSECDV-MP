@@ -10,7 +10,6 @@ const { requireAuth, requireRole } = require('../middleware/auth');
 const setViewData = require('../middleware/viewData');
 require('../config/passport.js')
 const logger   = require('../utils/logger');
-const { checkAuthenticated, checkEmployee, checkOwner } = require('../middleware/auth');  
 
 // Apply view data middleware to all admin routes
 router.use(setViewData);
@@ -85,7 +84,7 @@ router.post('/login', async (req, res, next) => {
 /* === */
 
 
-router.get('/view-orders', checkAuthenticated, checkEmployee, async (req, res) =>{
+router.get('/view-orders', requireAuth, requireRole('Employee', 'Owner'), async (req, res) =>{
     try {
         const orders = await Order.find();
         res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders, userStatus: req.user.status, user: req.user });
@@ -97,7 +96,7 @@ router.get('/view-orders', checkAuthenticated, checkEmployee, async (req, res) =
     }
 })
 
-router.post('/view-orders/more-details', checkAuthenticated, checkEmployee, async (req, res) => {
+router.post('/view-orders/more-details', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         const { id } = req.body
         const orderDetails = await Order.findOne({ orderId: id });
@@ -122,7 +121,7 @@ router.post('/view-orders/more-details', checkAuthenticated, checkEmployee, asyn
     }
 })
 
-router.get('/view-orders/control-id', checkAuthenticated, checkEmployee, async (req, res) => {
+router.get('/view-orders/control-id', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         const controlId = (req.query.controlId).toUpperCase();
         const orders = await Order.find({ "orderId": {$regex : controlId} });
@@ -134,7 +133,7 @@ router.get('/view-orders/control-id', checkAuthenticated, checkEmployee, async (
     }
 });
 
-router.get('/view-orders/hub-to-hub', checkAuthenticated, checkEmployee, async (req, res) => {
+router.get('/view-orders/hub-to-hub', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         const originSearch = req.query.originSearch;
         const destSearch = req.query.destSearch;
@@ -150,7 +149,7 @@ router.get('/view-orders/hub-to-hub', checkAuthenticated, checkEmployee, async (
     }
 });
 
-router.get('/view-orders/daily-net', checkAuthenticated, checkEmployee, async (req, res) => {
+router.get('/view-orders/daily-net', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         var tempDaySearch = req.query.daySearch;
         var year = '-' + tempDaySearch.substr(0, 4);
@@ -186,7 +185,7 @@ router.get('/view-orders/daily-net', checkAuthenticated, checkEmployee, async (r
     }
 });
 
-router.get('/view-orders/monthly-net', checkAuthenticated, checkEmployee, async (req, res) => {
+router.get('/view-orders/monthly-net', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         var monthSearch = req.query.monthSearch;
         const month = monthSearch.substr(5, 7) + '-';
@@ -223,7 +222,7 @@ router.get('/view-orders/monthly-net', checkAuthenticated, checkEmployee, async 
     }
 });
 
-router.get('/view-orders/annual-net', checkAuthenticated, checkEmployee, async (req, res) => {
+router.get('/view-orders/annual-net', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         const yearSearch = req.query.yearSearch;
         const orders = await Order.find({
@@ -256,11 +255,11 @@ router.get('/view-orders/annual-net', checkAuthenticated, checkEmployee, async (
 /* === */
 
 /* ADD ORDER */
-router.get('/create-order', checkAuthenticated, checkAuthenticated, checkEmployee, async (req, res) =>{
+router.get('/create-order', requireAuth, requireRole('Employee', 'Owner'), async (req, res) =>{
     res.render('order_form', {layout: "admin.hbs", title: "Order Form", css:"order_form"});
 })
 
-router.post('/add-order', checkAuthenticated, checkEmployee, async (req, res) =>{
+router.post('/add-order', requireAuth, requireRole('Employee', 'Owner'), async (req, res) =>{
     try {
         var { orderId, senderName, receiverName, senderNum, receiverNum,
               itemNum, itemDesc, itemPrice, 
@@ -319,7 +318,7 @@ router.post('/add-order', checkAuthenticated, checkEmployee, async (req, res) =>
     
 })
 
-router.post('/validate', checkAuthenticated, checkEmployee, async (req, res) => {
+router.post('/validate', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         const { prefix } = req.body; // first three characters
         console.log("PREFIX", prefix);
@@ -339,7 +338,7 @@ router.post('/validate', checkAuthenticated, checkEmployee, async (req, res) => 
 /* === */
 
 /* EDIT ORDERS */
-router.get('/edit-order/:orderId', checkAuthenticated, checkEmployee, async (req, res) =>{
+router.get('/edit-order/:orderId', requireAuth, requireRole('Employee', 'Owner'), async (req, res) =>{
     const order = req.params.orderId;
     const specificOrder = await Order.findOne({ orderId: order});
 
@@ -393,7 +392,7 @@ router.get('/edit-order/:orderId', checkAuthenticated, checkEmployee, async (req
                                orderDetails: orderDetails});
 })
 
-router.post('/edit-order', checkAuthenticated, checkEmployee, async (req, res) =>{
+router.post('/edit-order', requireAuth, requireRole('Employee', 'Owner'), async (req, res) =>{
     try {
         var { orderId, senderName, receiverName, senderNum, receiverNum,
                 itemNum, itemDesc, itemPrice, 
@@ -439,7 +438,7 @@ router.post('/edit-order', checkAuthenticated, checkEmployee, async (req, res) =
 /* === */
 
 /* UPDATE ORDERS */
-router.post('/update-order', checkAuthenticated, checkAuthenticated, checkEmployee, async (req, res) => {
+router.post('/update-order', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         var { id, newStatus, newEDA, newDate, newTime, statusDesc } = req.body;
         
@@ -488,7 +487,7 @@ router.post('/update-order', checkAuthenticated, checkAuthenticated, checkEmploy
 /* === */
 
 /* DELETE ORDERS */
-router.post('/delete-order', checkAuthenticated, checkAuthenticated, checkEmployee, async (req, res) => {
+router.post('/delete-order', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         var { id } = req.body;
         const order = await Order.findOne({ orderId: id });
@@ -506,7 +505,7 @@ router.post('/delete-order', checkAuthenticated, checkAuthenticated, checkEmploy
 })
 /* === */
 
-router.get('/logout', checkAuthenticated, checkEmployee, (req, res, next) => {
+router.get('/logout', requireAuth, requireRole('Employee', 'Owner'), (req, res, next) => {
     req.logout((err)=> {
         if (err) {return next(err)};
         res.redirect('/admin');

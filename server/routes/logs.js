@@ -1,7 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const Logs    = require('../models/Logs');
-const { checkAuthenticated, checkOwner } = require('../middleware/auth');
+const { requireAuth, requireRole } = require('../middleware/auth');
 const logger  = require('../utils/logger');
 
 //ingestions
@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
 });
 
 //owner only
-router.get('/', checkAuthenticated, checkOwner, async (_req, res) => {
+router.get('/', requireAuth, requireRole("Owner"), async (_req, res) => {
   const logs = await Logs.find().sort({ timestamp:-1 }).limit(1000);
   res.render('system_logs', {
     layout:'admin.hbs',
