@@ -4,26 +4,26 @@
     <div class="flex-child">
       <label for="sender-name">Sender's Name*</label>
       <br>
-      <input type="text" name="sender-name" class="input-normal" id="inputSender" placeholder="Sender's Name" >
+      <input type="text" minlength="1" name="sender-name" class="input-normal" id="inputSender" placeholder="Sender's Name" >
       <br>
       <label for="sender-number">Sender's Mobile Number*</label>
       <br>
       <div class="flex-parent">
         <p class="number-code">+63</p>
-        <input type="tel" name="sender-number" class="phone-number" id="inputSenderNum" placeholder="9XX XXX XXXX" >
+        <input type="tel" minlength="10" maxlength="10" name="sender-number" class="phone-number" id="inputSenderNum" placeholder="9XXXXXXXXX" >
         <br>
       </div>
     </div>
     <div class="flex-child">
       <label for="sender-name">Receiver's Name*</label>
       <br>
-      <input type="text" name="sender-name" class="input-normal" id="inputReceiver" placeholder="Receiver's Name" >
+      <input type="text" minlength="1" name="sender-name" class="input-normal" id="inputReceiver" placeholder="Receiver's Name" >
       <br>
       <label for="sender-number">Receiver's Mobile Number*</label>
       <br>
       <div class="flex-parent">
         <p class="number-code">+63</p>
-        <input type="tel" name="sender-number" class="phone-number" id="inputReceiverNum" placeholder="9XX XXX XXXX" >
+        <input type="tel" minlength="10" maxlength="10" name="sender-number" class="phone-number" id="inputReceiverNum" placeholder="9XXXXXXXXX" >
         <br>
       </div>
     </div>
@@ -40,7 +40,7 @@
           </div>
           <div>
             <h3>Item Description</h3>
-            <input type="text" class="desc-input" placeholder="Item Description" >
+            <input type="text" minlength="1" class="desc-input" placeholder="Item Description" >
             <br>
           </div>
           <div>

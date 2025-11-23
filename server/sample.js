@@ -1,8 +1,9 @@
 const sampleUsers = [
     /* 1 */
     {   userId: 100001,
-        username: "@johnniecruz",
+        username: "johnnie@cruz",
         name: "John Cruz",
+        phoneNumber: 9121231234,
         password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu", //String
         status: "Customer",
         securityQuestions: ["1", "2", "3"],
@@ -16,19 +17,23 @@ const sampleUsers = [
     {   userId: 100002,
         username: "Juannn",
         name: "Juan Perez",
+        phoneNumber: 9121234567,
         password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu", //String
         status: "Customer",
         securityQuestions: ["2", "3", "4"],
         secAns1: "$2a$12$WnMSrE7b1VHlAxEpW7HZgu5irZTik.w1Y5ASA82kQqtjtND1Kc45C",     // Torrez - Mother's maiden name
         secAns2: "$2a$12$QV.AhiLWQx9.4YFjGjGFWOgC67m8hiwt5zan5NPFnTyzdfSExMeNy",     // The One - Childhood Nickname
         secAns3: "$2a$12$/mY4dor6FrS.cY.I1nsd9.Gtr5VCDcJ/gPttQTEozmXzqlhf41dOC",     // International School - Name of the first school you attended
-        passwordHistory: [],
-        lastChanged: "11-01-2025 12:49:01 pm" },
+        passwordHistory: [
+            '$2a$12$p.mSWN6uLaikwI2O5v2xWOYyf4YREhQHIz75nvcmtdYX5ssgTpi8S'      //Pass100@JP
+        ],
+        lastChanged: "11-22-2025 11:49:01 pm" },
 
     /* 3 */
     {   userId: 100003,
         username: "Josephbro",
         name: "Joseph Santos",
+        phoneNumber: 9124446574,
         password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu", //String
         status: "Customer",
         securityQuestions: ["3", "4", "5"],
@@ -42,6 +47,7 @@ const sampleUsers = [
     {   userId: 100004,
         username: "JuanitaGirlie",
         name: "Juanita Abagnale",
+        phoneNumber: 9123331122,
         password: "$2b$12$VNl.vHGv8kAw8rZELZqmm.IdfcX0OGgbXomjCfygyQB.gy6eOl2Fu", //String
         status: "Customer",
         securityQuestions: ["3", "1", "5"],
@@ -55,6 +61,7 @@ const sampleUsers = [
     {   userId: 100005,
         username: "Manila Branch",
         name: "Man ila",
+        phoneNumber: 9192779950, //SMART Support Line
         password: "$2a$12$g0df/6XG8TvZHf7xa4U/UuhzvFOQQOQ8RqxkH4Afhia2U8Qadd4r.", //Manila123!
         status: "Employee",
         securityQuestions: ["3", "4", "5"],
@@ -68,6 +75,7 @@ const sampleUsers = [
     {   userId: 100006,
         username: "realtester",
         name: "Real Tester",
+        phoneNumber: 9987654321,
         password: "$2b$12$o1g4ALYtWGnBzCTTyys/5uxBxrlEI7FncZ5PAzNd1cVz/Tg6hmmR.", //Sample100!
         status: "Customer",
         securityQuestions: ["1", "3", "5"],
@@ -77,18 +85,19 @@ const sampleUsers = [
         passwordHistory: [],
         lastChanged: "11-01-2025 01:10:04 pm" },
 
-    /* 7 */
+    /* 7 - ADMIN OWNER */
     {   userId: 100007,
-        username: "Renwo",
-        name: "ESMC CEO",
+        username: "admin",
+        name: "Admin Owner",
+        phoneNumber: 9174600084, //GLOBE Support Line
         password: "$2a$12$uo7obAjU2b.vLI5Q0WO9p.mr6wU/D4Es979GrWDfcvdqLu60nuGoO", //ESMCOwner@2006
         status: "Owner",
-        securityQuestions: ["1", "3", "5"],
-        secAns1: "$2a$12$s2zvnnGfNSZAj2eiZwKp.uniNqI9HEtYBFH1/4QR8ega.g9.wwVQK", // ESMC's Dog - First Pet's Name
-        secAns2: "$2a$12$npjbDpISekyzy80eLogBYOTY09/.Q69sbwz65pQ.njwEYMpLuEiTW", // ESMC Kiddo - Childhood Nickname
-        secAns3: "$2a$12$uzA3RwxqlZpm3RavHc6e.OzqQOY/nNhjqg564GKI8K/E/OFx5aUP.", // ESMC CEO - Favorite fictional character
+        securityQuestions: ["1", "2", "3"],
+        secAns1: "$2b$12$kU/p.FXg5pidk2rRntF3zeX7tfT91dtYowRebHSN77FEBZS7N6Myi", // Admin - First Pet's Name
+        secAns2: "$2b$12$Z6qbUY/48SUg/xHCVlN7heyUQbA6ke4wo7bleDIh4bOtEEenVOF6u", // Admin - Childhood Nickname
+        secAns3: "$2b$12$iFZN1/dWlkUMp4znf6EK5.5K8Pyduts.WsgCoQJ8dYNFZIF6jHZcm", // Admin - Favorite fictional character
         passwordHistory: [],
-        lastChanged: "01-01-2006 12:00:00 am" },
+        lastChanged: "11-01-2025 01:10:04 pm" },
 ];
 
 const sampleOrders = [
@@ -98,6 +107,7 @@ const sampleOrders = [
         receiverName : "Juan Perez",
         senderNum : 9121231234,
         receiverNum : 9121234567,
+        userIds : [100001, 100002],
 
         itemDesc : ["Item1", "Item2"],
         itemNum : [1, 1],
@@ -118,12 +128,12 @@ const sampleOrders = [
     },
 
     /* 2 */
-    {
-        orderId: "FRI98765",
+    {   orderId: "FRI98765",
         senderName: "Joseph Santos",
         receiverName: "Juan Perez",
         senderNum: 9124446574,
-        receiverNum: 9122222222,
+        receiverNum: 9121234567,
+        userIds : [100003, 100002],
 
         itemDesc: ["Item11", "Item22"],
         itemNum: [3, 5],
@@ -147,8 +157,9 @@ const sampleOrders = [
     {   orderId : "THU11111",
         senderName : "John Cruz",
         receiverName : "Juanita Abagnale",
-        senderNum : 9129874567,
+        senderNum : 9121231234,
         receiverNum : 9123331122,
+        userIds : [100001, 100004],
 
         itemDesc : ["Item12"],
         itemNum : [5],

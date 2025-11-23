@@ -2,13 +2,15 @@ const mongoose = require('mongoose')
 
 const OrderSchema = new mongoose.Schema({
     //user inputs
-    senderId : Number,
-    receiverId : Number,
     orderId : String,
     senderName : String,
     receiverName : String,
     senderNum : Number,
     receiverNum : Number,
+    userIds : { 
+        type: [Number],
+        default: [],
+    },
     itemDesc : [],
     itemNum : [],
     itemPrice : [],

@@ -6,7 +6,18 @@ const Order = require('../models/Order.js');
 const Update = require('../models/Update.js');
 
 const passport = require('passport');
+const setViewData = require('../middleware/viewData');
 require('../config/passport');
+
+// Apply view data middleware to all tracking routes
+router.use(setViewData);
+
+checkAuthenticated = (req,res, next) => {
+    if(req.user){
+        return next();
+    }
+    res.redirect('/search_parcel/login');
+}
 
 router.get('/', (req, res, next) => {
     if (!req.user) {
@@ -16,7 +27,14 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/', async (req, res) =>{
-    res.render('search_parcel', {title: "Search | ESMC", css:"search_parcel"});
+    res.render('search_parcel', {title: "Search | ESMC", css:"search_parcel", user: req.user});
+})
+
+router.get('/logout', (req, res, next) => {
+    req.logout((err) => {
+        if (err) return next(err);
+        res.redirect('/search_parcel/login');
+    });
 })
 
 router.get('/login', (req, res) => {
@@ -33,7 +51,7 @@ router.get('/login', (req, res) => {
 
 // with custom error callback to the login page
 router.post('/login', async (req, res, next) => {
-    passport.authenticate('local', (error, user, info) => {
+    passport.authenticate('local', async (error, user, info) => {
         if (error) {
             return next(error);
         }
@@ -42,25 +60,35 @@ router.post('/login', async (req, res, next) => {
             return res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"search_parcel", error: info.message});
         }
 
+        if (user.status !== 'Customer' && user.status !== 'Owner') {
+            return res.render('login', {layout: "login.hbs", title: "Login | ESMC", css:"login", path:"search_parcel", error: "Invalid username or password."});
+        }
+
+        // Get last login attempt info before logging in
+        const { getLastLoginAttemptInfo } = require('../middleware/loginSecurity');
+        const lastAttemptInfo = await getLastLoginAttemptInfo(user.username);
+
         // alternative to successRedirect
         req.logIn(user, (err) => {
             if (err) {
                 return next(err);
+            }
+            // Store last login attempt info in session for notification
+            if (lastAttemptInfo) {
+                req.session.lastLoginAttemptInfo = lastAttemptInfo;
             }
             return res.redirect('/search_parcel');
         })
     })(req, res, next); // let the request proceed instead of just checking it
 })
 
-router.post('/', async (req, res) =>{
+router.post('/', checkAuthenticated, async (req, res) =>{
     try {
         const { id } = req.body;
-        if(!req.user) { 
-            return res.status(401).json({exists:false}); 
-        }  
+ 
         const trackerId = await Order.findOne({
             orderId : id,
-            userID  : req.user.employeeId            
+            userIds : req.user.userId
         });
         res.json({ exists: Boolean(trackerId) });
     } catch (error) {
@@ -69,16 +97,13 @@ router.post('/', async (req, res) =>{
     }
 })
 
-router.get('/track=:id', async (req, res) =>{
-    if(!req.user) {
-        return res.redirect('/search_parcel/login'); 
-    }
+router.get('/track=:id', checkAuthenticated, async (req, res) =>{
     const id = req.params.id;
     console.log(id);
     try {
         const order = await Order.findOne({ 
             orderId : id, 
-            userID : req.user.employeeId
+            userIds : req.user.userId
         });
         if (!order) {
             return res.redirect('/search_parcel');
@@ -88,21 +113,19 @@ router.get('/track=:id', async (req, res) =>{
                                       trackerId: order.orderId, 
                                       status: order.status, 
                                       estDate: order.arrivalDate, 
-                                      branch: order.originBranch});
+                                      branch: order.originBranch,
+                                      user: req.user});
     } catch (error) {
         res.status(500).json({ error: 'An internal server error occurred' });
     }
 })
 
-router.get('/track=:id/more-details', async (req, res) =>{
-    if(!req.user){ 
-        return res.redirect('/search_parcel/login'); 
-    }
+router.get('/track=:id/more-details', checkAuthenticated, async (req, res) =>{
     const id = req.params.id;
     try {
         const order = await Order.findOne({ 
             orderId: id,
-            userID : req.user.employeeId
+            userIds : req.user.userId
         });
         if (!order) {
             return res.redirect('/search_parcel');
@@ -151,7 +174,8 @@ router.get('/track=:id/more-details', async (req, res) =>{
                                id: order.orderId,
                                progress: progressClass, 
                                estDate: order.arrivalDate, 
-                               update: allUpdates});
+                               update: allUpdates,
+                               user: req.user});
     } catch (error) {
         res.status(500).json({ error: 'An internal server error occurred' });
     }

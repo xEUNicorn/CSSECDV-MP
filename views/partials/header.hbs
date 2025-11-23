@@ -14,8 +14,63 @@
             <p class="topbar-links"><a id="search-page-link" href="/search_parcel">SEARCH PARCEL</a></p>
         </div>
     </div>
+    {{#if user}}
+    <div id="profile" class="flex-parent" style="margin-left: auto; margin-right: 20px; align-self: center;">
+        <div id="user-menu-container">
+            <img id="profile-icon" src="/img/profile_icon.svg" onclick="toggleUserMenu()" style="cursor: pointer;" />
+            <div id="user-dropdown-menu" class="user-dropdown" style="display: none;">
+                <div class="user-dropdown-header">
+                    <div class="user-name">{{user.name}}</div>
+                    <div class="user-username">{{user.username}}</div>
+                </div>
+                <div class="user-dropdown-divider"></div>
+                <div class="user-dropdown-item">
+                    <span class="dropdown-label">Last Login:</span>
+                    <span class="dropdown-value">
+                        {{#if user.loginHistory}}
+                            {{#if (lastLogin user.loginHistory)}}
+                                {{formatDate (lastLogin user.loginHistory)}}
+                            {{else}}
+                                Never
+                            {{/if}}
+                        {{else}}
+                            Never
+                        {{/if}}
+                    </span>
+                </div>
+                <div class="user-dropdown-divider"></div>
+                <a href="/password/change?from=search_parcel" class="user-dropdown-item user-dropdown-link">
+                    <span class="dropdown-icon">🔒</span>
+                    Change Password
+                </a>
+                <a href="/search_parcel/logout" class="user-dropdown-item user-dropdown-link">
+                    <span class="dropdown-icon">🚪</span>
+                    Sign Out
+                </a>
+            </div>
+        </div>
+    </div>
+    {{else}}
     <a class="contact-us-link" href="/contact_us">CONTACT US</a>
+    {{/if}}
 </div>
+<script>
+    function toggleUserMenu() {
+        const menu = document.getElementById('user-dropdown-menu');
+        if (menu) {
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const container = document.getElementById('user-menu-container');
+        const menu = document.getElementById('user-dropdown-menu');
+        if (container && menu && !container.contains(event.target) && menu.style.display === 'block') {
+            menu.style.display = 'none';
+        }
+    });
+</script>
 <!-- until here -->
 <!-- small header here -->
 <div id="small-nav">

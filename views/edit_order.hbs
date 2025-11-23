@@ -25,28 +25,28 @@
 		<input type="hidden" id="orderId" value="{{orderDetails.orderId}}"> 
 		<label for="sender-name">Sender's Name*</label>
 		<br>
-		<input type="text" name="sender-name" class="input-normal" id="inputSender" placeholder="Sender's Name" value="{{orderDetails.senderName}}" >
+		<input type="text" minlength="1" name="sender-name" class="input-normal" id="inputSender" placeholder="Sender's Name" value="{{orderDetails.senderName}}" >
 		<br>
 		<label for="sender-number">Sender's Mobile Number*</label>
 		<br>
 		<div class="flex-parent test">
 			<p class="number-code">+63</p>
-			<input type="tel" name="sender-number" id="inputSenderNum"
-			       class="phone-number" value="{{orderDetails.senderNum}}" placeholder="9XX XXX XXXX" >
+			<input type="tel" name="sender-number" id="inputSenderNum" minlength="10" maxlength="10"
+			       class="phone-number" value="{{orderDetails.senderNum}}" placeholder="9XXXXXXXXX" >
 				   <br>
 		</div>
 		</div>
 		<div class="flex-child">
 		<label for="sender-name">Receiver's Name*</label>
 		<br>
-		<input type="text" name="sender-name" class="input-normal" id="inputReceiver" placeholder="Receiver's Name" value="{{orderDetails.receiverName}}" >
+		<input type="text" minlength="1" name="sender-name" class="input-normal" id="inputReceiver" placeholder="Receiver's Name" value="{{orderDetails.receiverName}}" >
 		<br>
 		<label for="sender-number">Receiver's Mobile Number*</label>
 		<br>
 		<div class="flex-parent test">
 			<p class="number-code">+63</p>
-			<input type="tel" name="sender-number" pattern="[9][0-9]{2} [0-9]{3} [0-9]{4}" id="inputReceiverNum"
-			       class="phone-number" placeholder="9XX XXX XXXX" value="{{orderDetails.receiverNum}}" >
+			<input type="tel" name="sender-number" pattern="[9][0-9]{2} [0-9]{3} [0-9]{4}" id="inputReceiverNum" minlength="10" maxlength="10"
+			       class="phone-number" placeholder="9XXXXXXXXX" value="{{orderDetails.receiverNum}}" >
 				   <br>
 		</div>
 		</div>

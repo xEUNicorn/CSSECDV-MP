@@ -64,7 +64,8 @@ const verifyCallback = async (req, username, password, done) => {
         } else {
             console.log('Passwords do not match! Authentication failed.');
             // Record failed login attempt
-            const failInfo = await recordFailedLogin(username);
+            const ipAddress = req.ip || req.connection.remoteAddress;
+            const failInfo = await recordFailedLogin(username, ipAddress);
 
             logger.warn({
                 event: 'LOGIN_FAIL_BADPASS',

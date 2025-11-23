@@ -71,7 +71,7 @@ router.post('/register',  [
       .withMessage('User ID must be numeric')
    ], validate, async (req, res) => {
     try {
-        const { userId, username, name, password, securityQuestions, secAns1, secAns2, secAns3, date } = req.body;
+        const { userId, username, name, phoneNumber, password, securityQuestions, secAns1, secAns2, secAns3, date } = req.body;
 
         const hashedPass = await hashPassword(password)
         const hashedsecAns1 = await hashPassword(secAns1)
@@ -83,6 +83,7 @@ router.post('/register',  [
             userId: userId,
             username,
             name,
+            phoneNumber,
             password: hashedPass, 
             status: "Customer", // Default status
             securityQuestions,
