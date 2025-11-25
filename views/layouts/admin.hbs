@@ -9,7 +9,11 @@
   </head>
   <body>
     {{> notification_bar }}
-    {{> adminheader }}
+    {{#if customer}}
+      {{> header }}
+    {{else}}
+      {{> adminheader }}
+    {{/if}}
     {{{ body }}}
     {{> footer }}
   </body>

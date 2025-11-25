@@ -34,7 +34,7 @@ router.get('/change', requireAuth, (req, res) => {
         path: req.session.from || null
     }
     if (req.session.from == 'search_parcel') {
-        renderLayout.partials = 'header.hbs'
+        renderLayout.customer = true
     }
     res.render('change_password', renderLayout);
 });
