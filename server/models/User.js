@@ -21,6 +21,10 @@ const UserSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    failedVerifyAttempts: {
+        type: Number,
+        default: 0
+    },
     accountLocked: {
         type: Boolean,
         default: false

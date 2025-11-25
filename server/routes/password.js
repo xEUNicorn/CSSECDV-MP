@@ -233,9 +233,10 @@ router.post('/verify-username', async (req, res) =>{
             const questions = user.securityQuestions;
             randomQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 2); //shuffle and get two questions
             name = user.name;
+            lock = user.accountLocked;
         }
         
-        res.json({success: true, exists: isExisting, questions: randomQuestions, name: name});
+        res.json({success: true, exists: isExisting, questions: randomQuestions, name: name, lock: lock});
     }
     catch (error) {
         console.error("Error retrieving orders:", error);
@@ -267,7 +268,8 @@ router.post('/verify-security-answers', async (req, res) =>{
         const { username, secQ1, secQ2, secA1, secA2 } = req.body;
         const user = await User.findOne({ username: username }); //user exists
         const listSecurityQuestions = user.securityQuestions;
-        var answers = true;                                     // assume all answers are true
+        var answers = true;   // assume all answers are true
+        var lockAccount = false; //true if attempt reaches 5
 
         if (listSecurityQuestions) {
             const listHashedAnswers = [user.secAns1, user.secAns2, user.secAns3];
@@ -302,8 +304,29 @@ router.post('/verify-security-answers', async (req, res) =>{
             }
         }
         console.log(answers)
+
+        var newAttempt = 0;
+        const attempt = user.failedVerifyAttempts;
+        if (!answers) { //if answers is false, record the verify attempt
+            newAttempt = attempt + 1;
+            if (newAttempt == 5) {
+                lockAccount = true;
+            }
+        }
+
+        if (attempt != 0 || newAttempt != 0) {
+            var updates = {
+                failedVerifyAttempts: newAttempt
+            }
+            if (lockAccount) {
+                updates.accountLocked = lockAccount;
+                updates.lockUntil = new Date(Date.now() + 30 * 60 * 1000);
+            }
+            await User.updateOne({ username }, { $set: updates });
+        }
+
         
-        res.json({success: true, verified: answers});
+        res.json({success: true, verified: answers, lock: lockAccount});
     }
     catch (error) {
         console.error("Error retrieving orders:", error);
