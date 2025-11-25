@@ -54,12 +54,6 @@ const verifyCallback = async (req, username, password, done) => {
             const ipAddress = req.ip || req.connection.remoteAddress;
             await recordSuccessfulLogin(username, ipAddress);
 
-            logger.info({
-                event: 'LOGIN_SUCCESS',
-                username,
-                ip: ipAddress,
-                path: req.OriginalUrl
-            });
             return done(null, user);
         } else {
             console.log('Passwords do not match! Authentication failed.');
@@ -72,7 +66,7 @@ const verifyCallback = async (req, username, password, done) => {
                 username,
                 ip: req.ip,
                 path: req.originalUrl,
-                attempts: failInfo ? failInfoattempts: 1
+                attempts: failInfo ? failInfo.attempts: 1
             });
 
             if (failInfo && failInfo.locked) {

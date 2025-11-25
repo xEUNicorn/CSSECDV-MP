@@ -27,13 +27,16 @@ router.get('/change', requireAuth, (req, res) => {
         req.session.from = pathFrom; //extract the from part and save it
         return res.redirect('/password/change'); //go back and render the clean version
     }
-
-    res.render('change_password', {
+    var renderLayout = {
         layout: 'admin.hbs',
         title: 'Change Password | ESMC',
         css: 'change_password',
         path: req.session.from || null
-    });
+    }
+    if (req.session.from == 'search_parcel') {
+        renderLayout.partials = 'header.hbs'
+    }
+    res.render('change_password', renderLayout);
 });
 
 // Middleware to check if user has been re-authenticated recently (within 5 minutes)
