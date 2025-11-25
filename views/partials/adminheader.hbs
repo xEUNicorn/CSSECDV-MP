@@ -23,7 +23,7 @@
                         {{/if}}
                     </span>
                 </div>
-                <div class="user-dropdown-divider"></div>
+                {{#unless (eq user.status "Customer")}}
                 <div class="user-dropdown-divider"></div>
                 <!-- Admin quick links -->
                 <a href="/admin/view-orders" class="user-dropdown-item user-dropdown-link">
@@ -40,6 +40,7 @@
                     Login Logs
                 </a>
                 {{/if}}
+                {{/unless}}
                 <div class="user-dropdown-divider"></div>
                 <a href="/password/change?from=admin" class="user-dropdown-item user-dropdown-link">
                     <span class="dropdown-icon">🔒</span>
