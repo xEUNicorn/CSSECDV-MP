@@ -243,7 +243,6 @@ async function hashPassword(toBeHashed) {
         const hash = await bcrypt.hash(toBeHashed, salt);
         return hash;
     } catch (error) {
-        console.error("Error in generating the hash:", error);
         return null;
     }
     
@@ -261,7 +260,6 @@ async function compareHashes(normalStr, hashedStr) {
             return false;
         }
     } catch (error) {
-        console.error("Error in generating the hash:", error);
         return null;
     }
     

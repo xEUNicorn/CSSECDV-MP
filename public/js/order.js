@@ -130,13 +130,10 @@ $(document).ready(function() {
         };
 
         $.post('/admin/delete-order', deleteData, function(message, status) {
-            console.log("response data: ", message, status);
             if (message.success) {
                 setTimeout(function() {
                     window.location.href = "/admin/view-orders";
                 }, 300);
-            } else {
-                console.log("not success");
             }
         });
     });
@@ -245,7 +242,6 @@ function validateInput() { //discount is optional
 */
 function setDateLimit() {
     const givenEDT = $("#hidden-edt").val();
-    console.log(givenEDT);
     const [mm, dd, yyyy] = givenEDT.split('-').map(Number); //split them into numbers
     const month = String(mm).padStart(2, '0');
     const day = String(dd).padStart(2, '0');
@@ -261,13 +257,10 @@ function checkDate() {
     const inputDate = new Date($('#dateInput').val());
 
     const givenEDT = $("#hidden-edt").val();
-    console.log("INPUT", inputDate);
     const [mm, dd, yyyy] = givenEDT.split('-').map(Number); //split them into numbers
     const month = String(mm).padStart(2, '0');
     const day = String(dd).padStart(2, '0');
     const edtDate = new Date(`${yyyy}-${month}-${day}`); 
-    console.log("EDT2", edtDate);
-    console.log(inputDate < edtDate);
 
     if (inputDate < edtDate) {
         return false;
@@ -448,17 +441,14 @@ async function addToDatabase() {
         };
 
         $.post('/admin/add-order', orderData, function(message, status) {
-            console.log("response data: ", message, status);
             if (message.success) {
                 setTimeout(function() {
                     window.location.href = "/admin/view-orders";
                 }, 200);
-            } else {
-                console.log("not success");
             }
         });
     } catch (error) {
-        console.error("Error in generating tracker ID:", error);
+        addError("Error in adding order");
     }
 }
 
@@ -579,13 +569,10 @@ function updateDatabase() {
     };
 
     $.post('/admin/edit-order', orderData, function(message, status) {
-        console.log("response data: ", message, status);
         if (message.success) {
             setTimeout(function() {
                 window.location.href = "/admin/view-orders";
             }, 500);
-        } else {
-            console.log("not success");
         }
     });
 }
@@ -637,13 +624,10 @@ function updateStatus() {
     };
 
     $.post('/admin/update-order', updateData, function(message, status) {
-        console.log("response data: ", message, status);
         if (message.success) {
             setTimeout(function() {
                 window.location.href = "/admin/view-orders";
             }, 300);
-        } else {
-            console.log("not success");
         }
     });
 }

@@ -80,7 +80,6 @@ router.post('/verify-password', requireAuth, async (req, res) => {
         // Respond with a clear success object the client expects
         return res.json({ success: true, name: user.name, username: user.username });
     } catch (error) {
-        console.error('Password verification error:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -160,7 +159,6 @@ router.post('/change-password', requireAuth, checkRecentAuth, async (req, res) =
             lastChanged: currentTime
         });
     } catch (error) {
-        console.error('Password change error:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -187,7 +185,6 @@ router.get('/can-change', requireAuth, async (req, res) => {
                 : 'Password must be at least one day old before changing'
         });
     } catch (error) {
-        console.error('Error checking password eligibility:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -235,7 +232,6 @@ router.post('/verify-username', async (req, res) =>{
         res.json({success: true, exists: isExisting, questions: randomQuestions, name: name, lock: lockStatus.locked});
     }
     catch (error) {
-        console.error("Error retrieving orders:", error);
         res.status(500).send({success: false, message: "Server Error"});
     }
 })
@@ -251,7 +247,6 @@ router.post('/check-change', async (req, res) => {
         
         res.json({success: true, change: canChange});
     } catch (error) {
-        console.error('Error checking password eligibility:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -272,20 +267,12 @@ router.post('/verify-security-answers', async (req, res) =>{
             const listVerifyQuestions = [secQ1, secQ2];
             const listVerifyAnswers = [secA1, secA2];
 
-            console.log(listVerifyQuestions)
-            console.log(listVerifyAnswers)
-            console.log("=====")
-
             for (var i = 0; i < listSecurityQuestions.length; i++) {
                 const userQuestion = listSecurityQuestions[i];
                 const hashedAnswer = listHashedAnswers[i];
-
-                console.log(userQuestion)
-                console.log(hashedAnswer)
                 
                 for (var j = 0; j < listVerifyQuestions.length; j++) {
                     if (listVerifyQuestions[j] === userQuestion) {
-                        console.log(j)
                         const result = await compareHashes(listVerifyAnswers[j], hashedAnswer);
 
                         if (!result) { //not matched
@@ -299,7 +286,6 @@ router.post('/verify-security-answers', async (req, res) =>{
                 }
             }
         }
-        console.log(answers)
 
         var newAttempt = 0;
         const attempt = user.failedVerifyAttempts;
@@ -327,7 +313,6 @@ router.post('/verify-security-answers', async (req, res) =>{
         res.json({success: true, verified: answers, lock: lockAccount});
     }
     catch (error) {
-        console.error("Error retrieving orders:", error);
         res.status(500).send({success: false, message: "Server Error"});
     }
 })
@@ -359,7 +344,6 @@ router.post('/check-previous-passwords', async (req, res) =>{
         res.json({success: true, previous: prevPassword});
     }
     catch (error) {
-        console.error("Error retrieving orders:", error);
         res.status(500).send({success: false, message: "Server Error"});
     }
 })
@@ -401,7 +385,6 @@ router.post('/update-password', async (req, res) => {
         res.json({success: true});
         
     } catch (error) {
-        console.error('Password change error:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });

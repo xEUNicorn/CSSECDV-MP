@@ -7,13 +7,10 @@ const logger = require('../utils/logger');
 
 const verifyCallback = async (req, username, password, done) => {
     try {
-        console.log(req.body);
-        console.log("AUTHENTICATING");
 
         // Check if account is locked
         const lockStatus = await checkAccountLock(username);
         if (lockStatus.locked) {
-            console.log("Account is locked!");
 
             logger.warn({
                 event: 'LOGIN_FAIL_LOCKED',
@@ -30,8 +27,6 @@ const verifyCallback = async (req, username, password, done) => {
         const user = await User.findOne({ username: username });
         
         if (!user) {  
-            console.log("no user!");
-
             logger.warn({
                 event: 'LOGIN_FAIL_NOUSER',
                 username,
@@ -44,19 +39,16 @@ const verifyCallback = async (req, username, password, done) => {
         
         bcrypt.compare(password, user.password, async (err, result) => {
             if (err) {
-                console.error('Error comparing passwords:', err);
                 return;
             }
 
         if (result) {
-            console.log('Passwords match! User authenticated.');
             // Record successful login
             const ipAddress = req.ip || req.connection.remoteAddress;
             await recordSuccessfulLogin(username, ipAddress);
 
             return done(null, user);
         } else {
-            console.log('Passwords do not match! Authentication failed.');
             // Record failed login attempt
             const ipAddress = req.ip || req.connection.remoteAddress;
             const failInfo = await recordFailedLogin(username, ipAddress);
@@ -81,7 +73,6 @@ const verifyCallback = async (req, username, password, done) => {
         });
 
     } catch (err) {
-        console.error("Authentication error:", err);
         done(err);
     }
 }
@@ -95,16 +86,11 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((userId, done) => {
-    console.log("Printing username: ")
     User.findById(userId)
         .then((user) => {
-            console.log("found!")
-            console.log(userId)
-            console.log(user)
             done(null, user);
         })
         .catch((err)=> {
-            console.log("not found!")
             done(err);
         })
 })

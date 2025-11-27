@@ -86,14 +86,12 @@ router.post('/', requireAuth('customer'), requireRole('Customer', 'Owner'), asyn
         });
         res.json({ exists: Boolean(trackerId) });
     } catch (error) {
-        console.error("Database error:", error);
         res.status(500).json({ exists: false });
     }
 })
 
 router.get('/track=:id', requireAuth('customer'), requireRole('Customer', 'Owner'), async (req, res) =>{
     const id = req.params.id;
-    console.log(id);
     try {
         const order = await Order.findOne({ 
             orderId : id, 

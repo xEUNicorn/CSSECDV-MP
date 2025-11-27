@@ -132,7 +132,7 @@ async function checkInputs() {
         try {
             check = await checkUsername(userInfo);
         } catch (error) {
-            console.error("Error in checking username:", error);
+            addError("Server encountered problem... Contact Customer Support");
         }
     }
     
@@ -183,7 +183,6 @@ function checkUsername(userInfo) {
             }
         })
         .catch(errorMsg => {
-            console.error(errorMsg);
             return 0;
         })
 }
@@ -436,18 +435,15 @@ async function addToDatabase() {
         };
 
         $.post('/create_account/register', orderData, function(message, status) {
-            console.log("response data: ", message, status);
             if (message.success) {
                 const nextPath = $('#path').val()
                 setTimeout(function() {
                     window.location.href = nextPath + '/login';
                 }, 200);
-            } else {
-                console.log("not success");
-            }
+            } 
         });
     } catch (error) {
-        console.error("Error in generating tracker ID:", error);
+        addError("Error in creating account");
     }
 }
 
@@ -462,7 +458,6 @@ function generateUserID() {
             }
         })
         .catch(errorMsg => {
-            console.error(errorMsg);
             return 0;
         })
 }
@@ -562,7 +557,6 @@ async function verifyUsername() {
             $('#right-first-display').hide();
         }
     } catch (errorMsg) {
-        console.error(errorMsg);
         return 0;
     }
 }
@@ -572,7 +566,6 @@ async function verifyUsername() {
 function checkLastChanged(userInfo) {
     return $.post('/password/check-change', userInfo)
         .then(response => {
-            console.log(response.change)
             if (response.change) {    
                 return true; //can change password
             }
@@ -581,7 +574,6 @@ function checkLastChanged(userInfo) {
             }
         })
         .catch(errorMsg => {
-            console.error(errorMsg);
             return 0;
         })
 }
@@ -644,7 +636,6 @@ function verifySecurityAnswers() {
             }
         })
         .catch(errorMsg => {
-            console.error(errorMsg);
             return 0;
         })
 }
@@ -801,7 +792,6 @@ async function checkPasswordInputs() {
 function checkPreviousPassword(userInfo) {
     return $.post('/password/check-previous-passwords', userInfo)
         .then(response => {
-            console.log(response.previous)
             if (response.previous) {    
                 addForgotError("Cannot reuse a previous password. Please choose a different password!");
                 return false; //return false since this is one of the user's previous password
@@ -811,7 +801,6 @@ function checkPreviousPassword(userInfo) {
             }
         })
         .catch(errorMsg => {
-            console.error(errorMsg);
             return 0;
         })
 }
@@ -834,13 +823,11 @@ async function updatePassword() {
                 setTimeout(function() {
                     window.location.href = '/' + nextPath + '/login';
                 }, 200);
-            } else {
-                console.log("not success");
             }
         });
         
     } catch (error) {
-        console.error("Error in generating tracker ID:", error);
+        addError("Error in updating password");
     }
 }
 

@@ -91,7 +91,6 @@ router.get('/view-orders', requireAuth('admin'), requireRole('Employee', 'Owner'
     }
     catch (error)
     { 
-        console.error("Error retrieving orders:", error);
         res.status(500).send("Server Error");
     }
 })
@@ -116,7 +115,6 @@ router.post('/view-orders/more-details', requireAuth('admin'), requireRole('Empl
         });
     }
     catch (error) {
-        console.error("Error retrieving orders:", error);
         res.status(500).send("Server Error");
     }
 })
@@ -128,7 +126,6 @@ router.get('/view-orders/control-id', requireAuth('admin'), requireRole('Employe
         res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders });
     }
     catch (error) {
-        console.error("Error retrieving orders:", error);
         res.status(500).send("Server Error");
     }
 });
@@ -144,7 +141,6 @@ router.get('/view-orders/hub-to-hub', requireAuth('admin'), requireRole('Employe
         res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders });
     }
     catch (error) {
-        console.error("Error retrieving orders:", error);
         res.status(500).send("Server Error");
     }
 });
@@ -155,7 +151,6 @@ router.get('/view-orders/daily-net', requireAuth('admin'), requireRole('Employee
         var year = '-' + tempDaySearch.substr(0, 4);
         tempDaySearch = tempDaySearch.replace(tempDaySearch.substr(0, 5), '') + year;
         const daySearch = tempDaySearch;
-        //console.log(daySearch);
 
         const orders = await Order.find({
             "transDate": { $regex: daySearch }
@@ -180,7 +175,6 @@ router.get('/view-orders/daily-net', requireAuth('admin'), requireRole('Employee
         res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders, netIndicator: true, net: net });
     }
     catch (error) {
-        console.error("Error retrieving orders:", error);
         res.status(500).send("Server Error");
     }
 });
@@ -191,7 +185,6 @@ router.get('/view-orders/monthly-net', requireAuth('admin'), requireRole('Employ
         const month = monthSearch.substr(5, 7) + '-';
         const year = '-' + monthSearch.substr(0, 4);
         const monthRegex = new RegExp(month + "[0-9]*" + year);
-        console.log(monthRegex);
         const orders = await Order.find({
             "transDate": { $regex: monthRegex }
         });
@@ -211,13 +204,9 @@ router.get('/view-orders/monthly-net', requireAuth('admin'), requireRole('Employ
 
         const net = monthlyNet.length > 0 ? monthlyNet[0].totalSum : 0; //in case date is not existing
 
-        if(monthSearch.indexOf('-') === -1)
-            console.log("test");
-
         res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders, netIndicator: true, net: net });
     }
     catch (error) {
-        console.error("Error retrieving orders:", error);
         res.status(500).send("Server Error");
     }
 });
@@ -247,7 +236,6 @@ router.get('/view-orders/annual-net', requireAuth('admin'), requireRole('Employe
         res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders, netIndicator: true, net: net });
     }
     catch (error) {
-        console.error("Error retrieving orders:", error);
         res.status(500).send("Server Error");
     }
 });
@@ -309,7 +297,6 @@ router.post('/add-order', requireAuth('admin'), requireRole('Employee', 'Owner')
         });
 
         await addOrder.save();
-        console.log('Order saved:', addOrder);
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ error: 'An internal server error occurred' });
@@ -321,13 +308,10 @@ router.post('/add-order', requireAuth('admin'), requireRole('Employee', 'Owner')
 router.post('/validate', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         const { prefix } = req.body; // first three characters
-        console.log("PREFIX", prefix);
         const matchingOrders = await Order.find(
             { orderId: { $regex: `^${prefix}` } }, 
             { orderId: 1, _id: 0 }
         );
-
-        console.log("FOUND THE FOLLOWING:", matchingOrders);
                                         // Return the matching order IDs
         res.json({ success: true, orders: matchingOrders.map(order => order.orderId) });
     } catch (error) {
@@ -429,7 +413,6 @@ router.post('/edit-order', requireAuth('admin'), requireRole('Employee', 'Owner'
             return res.status(404).send("Order not found");
         }
 
-        console.log('Order saved:', updatedOrder);
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ error: 'An internal server error occurred' });
@@ -448,7 +431,7 @@ router.post('/update-order', requireAuth('admin'), requireRole('Employee', 'Owne
             const lastID = await Update.findOne().sort({ updateId: -1 }).exec();
             newUpdateId = lastID ? lastID.updateId + 1 : 30001;
         } catch (err) {
-            console.error("Error fetching last numberId:", err);
+            res.status(500).send("Server Error in updating order");
         }
 
         var addUpdate = new Update({
@@ -471,7 +454,6 @@ router.post('/update-order', requireAuth('admin'), requireRole('Employee', 'Owne
             $push: { updates: newUpdateId }
         };
 
-        console.log(changes);
         const updatedOrder = await Order.findOneAndUpdate({ orderId: id }, changes, {new: true});
         if (!updatedOrder) {
             return res.status(404).send("Order not found");
@@ -480,7 +462,6 @@ router.post('/update-order', requireAuth('admin'), requireRole('Employee', 'Owne
         res.json({ success: true });
     }
     catch (error) {
-        console.error("Error retrieving orders:", error);
         res.status(500).send("Server Error");
     }
 })
@@ -499,7 +480,6 @@ router.post('/delete-order', requireAuth('admin'), requireRole('Employee', 'Owne
         res.json({ success: true });
     }
     catch (error) {
-        console.error("Error retrieving orders:", error);
         res.status(500).send("Server Error");
     }
 })
@@ -548,7 +528,6 @@ router.get('/login-logs', requireAuth('admin'), requireRole('Owner'), async (req
             }
         });
     } catch (error) {
-        console.error('Error fetching login logs:', error);
         res.status(500).send('Server Error');
     }
 });
@@ -564,7 +543,6 @@ router.get('/login-history/:username', requireAuth('admin'), requireRole('Owner'
 
         res.json({ success: true, user });
     } catch (error) {
-        console.error('Error fetching login history:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -591,7 +569,6 @@ router.post('/unlock-account', requireAuth('admin'), requireRole('Owner'), async
 
         res.json({ success: true, message: 'Account unlocked successfully' });
     } catch (error) {
-        console.error('Error unlocking account:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -618,7 +595,6 @@ router.get('/export-logs', requireAuth('admin'), requireRole('Owner'), async (re
         res.setHeader('Content-Disposition', 'attachment; filename=login_logs.csv');
         res.send(csv);
     } catch (error) {
-        console.error('Error exporting logs:', error);
         res.status(500).send('Server Error');
     }
 });

@@ -28,7 +28,6 @@ router.post('/generate', async (req, res) =>{
         res.json({success: true, userId: nextUserId});
     }
     catch (error) {
-        console.error("Error retrieving orders:", error);
         res.status(500).send({success: false, message: "Server Error"});
     }
 })
@@ -48,7 +47,6 @@ router.post('/unique-username', async (req, res) => {
         res.json({success: true, exists: isExisting});
     }
     catch (error) {
-        console.error("Error retrieving orders:", error);
         res.status(500).send({success: false, message: "Server Error"});
     }
 })
@@ -97,10 +95,8 @@ router.post('/register',  [
         });
 
         await newUser.save();
-        console.log('User registered:', newUser);
         res.json({ success: true, message: 'Account created successfully' });
     } catch (error) {
-        console.error('Registration error:', error);
         res.status(500).json({success: false, error: 'Server error during registration' });
     }
 });
