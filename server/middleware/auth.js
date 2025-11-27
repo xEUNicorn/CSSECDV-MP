@@ -7,25 +7,33 @@ const ensureAuthenticated = (req) => {
     return Boolean(req.user);
 };
 
-const redirectToLogin = (req, res) => {
+const redirectToLogin = (req, res, path) => {
     if (req.method === 'GET') {
         req.session.returnTo = req.originalUrl;
     }
-    res.redirect('/admin/login');
+
+    if (path == 'admin') {
+        res.redirect('/admin/login');
+    } else {
+        res.redirect('/search_parcel/login');
+    }
+    
 };
 
-function requireAuth(req, res, next) {
-    if (ensureAuthenticated(req)) {
-        return next();
-    }
+function requireAuth(path) {
+    return function (req, res, next) {
+        if (ensureAuthenticated(req)) {
+            return next();
+        }
 
-    if (req.accepts('html')) {
-        return redirectToLogin(req, res);
-    }
-  
-    logger.warn({ event:'ACCESS_DENIED', reason:'Unauthenticated', ip:req.ip, path:req.originalUrl });
+        if (req.accepts('html')) {
+            return redirectToLogin(req, res, path);
+        }
+    
+        logger.warn({ event:'ACCESS_DENIED', reason:'Unauthenticated', ip:req.ip, path:req.originalUrl });
 
-    return res.status(401).json({ error: 'Authentication required.' });
+        return res.status(401).json({ error: 'Authentication required.' });
+    }
 }
 
 function requireRole(...roles) {

@@ -2,20 +2,12 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const router = express.Router();
 const User = require('../models/User');
-const { canChangePassword, formatDateTime, hashPassword, compareHashes } = require('../middleware/loginSecurity');
+const { checkAccountLock, canChangePassword, formatDateTime, hashPassword, compareHashes } = require('../middleware/loginSecurity');
 const { requireAuth } = require('../middleware/auth');
 const setViewData = require('../middleware/viewData');
 
 // Apply view data middleware so templates receive `user` and notifications
 router.use(setViewData);
-
-// Middleware to check if user is authenticated
-const checkAuthenticated = (req, res, next) => {
-    if (req.user) {
-        return next();
-    }
-    res.status(401).json({ error: 'Not authenticated' });
-};
 
 /**
  * Render change password page
@@ -230,16 +222,17 @@ router.post('/verify-username', async (req, res) =>{
         var isExisting = false;
         var randomQuestions = [0, 0]
         var name = " "
+        var lockStatus
 
         if (user) {
             isExisting = true;
             const questions = user.securityQuestions;
             randomQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 2); //shuffle and get two questions
             name = user.name;
-            lock = user.accountLocked;
+            lockStatus = await checkAccountLock(username);
         }
         
-        res.json({success: true, exists: isExisting, questions: randomQuestions, name: name, lock: lock});
+        res.json({success: true, exists: isExisting, questions: randomQuestions, name: name, lock: lockStatus.locked});
     }
     catch (error) {
         console.error("Error retrieving orders:", error);
@@ -315,6 +308,8 @@ router.post('/verify-security-answers', async (req, res) =>{
             if (newAttempt == 5) {
                 lockAccount = true;
             }
+        } else { //reset the failedVerifyAttempts
+            await User.updateOne({ username }, { $set: { failedVerifyAttempts: 0 } });
         }
 
         if (attempt != 0 || newAttempt != 0) {

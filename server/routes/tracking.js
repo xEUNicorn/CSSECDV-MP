@@ -6,18 +6,12 @@ const Order = require('../models/Order.js');
 const Update = require('../models/Update.js');
 
 const passport = require('passport');
+const { requireAuth, requireRole } = require('../middleware/auth');
 const setViewData = require('../middleware/viewData');
 require('../config/passport');
 
 // Apply view data middleware to all tracking routes
 router.use(setViewData);
-
-checkAuthenticated = (req,res, next) => {
-    if(req.user){
-        return next();
-    }
-    res.redirect('/search_parcel/login');
-}
 
 router.get('/', (req, res, next) => {
     if (!req.user) {
@@ -26,7 +20,7 @@ router.get('/', (req, res, next) => {
     next();   
 });
 
-router.get('/', async (req, res) =>{
+router.get('/', requireAuth('customer'), requireRole('Customer', 'Owner'), async (req, res) =>{
     res.render('search_parcel', {title: "Search | ESMC", css:"search_parcel", user: req.user});
 })
 
@@ -82,7 +76,7 @@ router.post('/login', async (req, res, next) => {
     })(req, res, next); // let the request proceed instead of just checking it
 })
 
-router.post('/', checkAuthenticated, async (req, res) =>{
+router.post('/', requireAuth('customer'), requireRole('Customer', 'Owner'), async (req, res) =>{
     try {
         const { id } = req.body;
  
@@ -97,7 +91,7 @@ router.post('/', checkAuthenticated, async (req, res) =>{
     }
 })
 
-router.get('/track=:id', checkAuthenticated, async (req, res) =>{
+router.get('/track=:id', requireAuth('customer'), requireRole('Customer', 'Owner'), async (req, res) =>{
     const id = req.params.id;
     console.log(id);
     try {
@@ -120,7 +114,7 @@ router.get('/track=:id', checkAuthenticated, async (req, res) =>{
     }
 })
 
-router.get('/track=:id/more-details', checkAuthenticated, async (req, res) =>{
+router.get('/track=:id/more-details', requireAuth('customer'), requireRole('Customer', 'Owner'), async (req, res) =>{
     const id = req.params.id;
     try {
         const order = await Order.findOne({ 

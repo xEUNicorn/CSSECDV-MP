@@ -23,13 +23,29 @@ async function checkAccountLock(username) {
             // Unlock the account
             await User.updateOne(
                 { username },
-                {
-                    $set: {
-                        accountLocked: false,
-                        failedLoginAttempts: 0,
-                        lockUntil: null
+                [
+                    {
+                        $set: {
+                            accountLocked: false,
+                            failedLoginAttempts: {
+                                $cond: [
+                                    { $gte: ["$failedLoginAttempts", 5] },  //check the condition if this reaches 5
+                                    0,  //set to 0 if yes
+                                    "$failedLoginAttempts"  //set to current value if not
+                                ]
+                            },
+                            failedVerifyAttempts: {
+                                $cond: [
+                                    { $gte: ["$failedVerifyAttempts", 5] },  //check the condition if this reaches 5
+                                    0,  //set to 0 if yes
+                                    "$failedVerifyAttempts"  //set to current value if not
+                                ]
+                            },
+                            lockUntil: null
+                        }
                     }
-                }
+                ]
+                
             );
             return { locked: false };
         }
@@ -94,6 +110,7 @@ async function recordSuccessfulLogin(username, ipAddress) {
         {
             $set: {
                 failedLoginAttempts: 0,
+                failedVerifyAttempts: 0,
                 accountLocked: false,
                 lockUntil: null,
                 lastLoginAttempt: new Date(),

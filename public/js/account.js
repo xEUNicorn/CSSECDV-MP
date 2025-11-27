@@ -262,7 +262,7 @@ function validatePassword(error) {
     }
 
     //RULE: Must not include your NAME or USERNAME
-    if (validated && nameInPassword()) {
+    if (nameInPassword()) {
         $('#rule-name').attr('src', '/img/valid.png')
     } else {
         $('#rule-name').attr('src', '/img/invalid.png')
@@ -531,25 +531,30 @@ async function verifyUsername() {
     try {
         const response = await $.post('/password/verify-username', userInfo);
         if (response.exists) {
-            const checkLast = await checkLastChanged(userInfo)
-            if (!checkLast) { //check if username can change password or not
+            if (response.lock) {
                 $('#change-pass-error').show()
-                $('#verify-username-identity').hide()
+                $('#change-pass-text').text("Account is unavailable at the moment")
             } else {
-                var quesText1 = secQuestionText(response.questions[0])
-                var quesText2 = secQuestionText(response.questions[1])
+                const checkLast = await checkLastChanged(userInfo)
+                if (!checkLast) { //check if username can change password or not
+                    $('#change-pass-error').show()
+                    $('#change-pass-text').text("You cannot change your password at the moment")
+                } else {
+                    var quesText1 = secQuestionText(response.questions[0])
+                    var quesText2 = secQuestionText(response.questions[1])
 
-                $('#change-pass-error').hide()
-                $('#verify-error').hide()
-                $('#verify-username-identity').hide()
-                $('#right-first-display').show();
-                $('#verify-question1').text(quesText1);
-                $('#verify-question1').data("secret", response.questions[0]); //put the security question value in secret
-                $('#verify-question2').text(quesText2);
-                $('#verify-question2').data("secret", response.questions[1]); //put the security question value in secret
-                $('#name-holder').data("secret", response.name); //put the name of the user in secret
-                $('#verify-username').prop('disabled', true);
+                    $('#change-pass-error').hide()
+                    $('#verify-error').hide()
+                    $('#right-first-display').show();
+                    $('#verify-question1').text(quesText1);
+                    $('#verify-question1').data("secret", response.questions[0]); //put the security question value in secret
+                    $('#verify-question2').text(quesText2);
+                    $('#verify-question2').data("secret", response.questions[1]); //put the security question value in secret
+                    $('#name-holder').data("secret", response.name); //put the name of the user in secret
+                    $('#verify-username').prop('disabled', true);
+                }
             }
+            $('#verify-username-identity').hide()
         }
         else {
             $('#verify-error').hide()
@@ -622,7 +627,11 @@ function verifySecurityAnswers() {
 
     $.post('/password/verify-security-answers', userInfo)
         .then(response => {
-            if (response.verified) {
+            if (response.lock) {
+                $('#right-first-display').hide();
+                $('#change-pass-error').show()
+                $('#change-pass-text').text("Account is unavailable at the moment")
+            } else if (response.verified) {
                 $('#verify-error').hide()
                 $('#right-first-display').hide();
                 $('#right-second-display').show();
@@ -726,6 +735,7 @@ function validateForgotPassword(error) {
 */
 function addForgotError(errorMsg) {
     $('.forgot-popup-table').append("<tr class='forgot-popup-tr'><td>"+ errorMsg + "</td></tr>");
+    logValidationFail(errorMsg);
 }
 
 /*  Checks password contains their names/username, specifically if at least 4 characters are in there

@@ -84,7 +84,7 @@ router.post('/login', async (req, res, next) => {
 /* === */
 
 
-router.get('/view-orders', requireAuth, requireRole('Employee', 'Owner'), async (req, res) =>{
+router.get('/view-orders', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) =>{
     try {
         const orders = await Order.find();
         res.render('view_database', { layout: "admin.hbs", title: "View Orders | ESMC", css: "view_database", orders: orders, userStatus: req.user.status, user: req.user });
@@ -96,7 +96,7 @@ router.get('/view-orders', requireAuth, requireRole('Employee', 'Owner'), async 
     }
 })
 
-router.post('/view-orders/more-details', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
+router.post('/view-orders/more-details', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         const { id } = req.body
         const orderDetails = await Order.findOne({ orderId: id });
@@ -121,7 +121,7 @@ router.post('/view-orders/more-details', requireAuth, requireRole('Employee', 'O
     }
 })
 
-router.get('/view-orders/control-id', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
+router.get('/view-orders/control-id', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         const controlId = (req.query.controlId).toUpperCase();
         const orders = await Order.find({ "orderId": {$regex : controlId} });
@@ -133,7 +133,7 @@ router.get('/view-orders/control-id', requireAuth, requireRole('Employee', 'Owne
     }
 });
 
-router.get('/view-orders/hub-to-hub', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
+router.get('/view-orders/hub-to-hub', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         const originSearch = req.query.originSearch;
         const destSearch = req.query.destSearch;
@@ -149,7 +149,7 @@ router.get('/view-orders/hub-to-hub', requireAuth, requireRole('Employee', 'Owne
     }
 });
 
-router.get('/view-orders/daily-net', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
+router.get('/view-orders/daily-net', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         var tempDaySearch = req.query.daySearch;
         var year = '-' + tempDaySearch.substr(0, 4);
@@ -185,7 +185,7 @@ router.get('/view-orders/daily-net', requireAuth, requireRole('Employee', 'Owner
     }
 });
 
-router.get('/view-orders/monthly-net', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
+router.get('/view-orders/monthly-net', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         var monthSearch = req.query.monthSearch;
         const month = monthSearch.substr(5, 7) + '-';
@@ -222,7 +222,7 @@ router.get('/view-orders/monthly-net', requireAuth, requireRole('Employee', 'Own
     }
 });
 
-router.get('/view-orders/annual-net', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
+router.get('/view-orders/annual-net', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         const yearSearch = req.query.yearSearch;
         const orders = await Order.find({
@@ -255,11 +255,11 @@ router.get('/view-orders/annual-net', requireAuth, requireRole('Employee', 'Owne
 /* === */
 
 /* ADD ORDER */
-router.get('/create-order', requireAuth, requireRole('Employee', 'Owner'), async (req, res) =>{
+router.get('/create-order', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) =>{
     res.render('order_form', {layout: "admin.hbs", title: "Order Form", css:"order_form"});
 })
 
-router.post('/add-order', requireAuth, requireRole('Employee', 'Owner'), async (req, res) =>{
+router.post('/add-order', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) =>{
     try {
         var { orderId, senderName, receiverName, senderNum, receiverNum,
               itemNum, itemDesc, itemPrice, 
@@ -318,7 +318,7 @@ router.post('/add-order', requireAuth, requireRole('Employee', 'Owner'), async (
     
 })
 
-router.post('/validate', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
+router.post('/validate', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         const { prefix } = req.body; // first three characters
         console.log("PREFIX", prefix);
@@ -338,7 +338,7 @@ router.post('/validate', requireAuth, requireRole('Employee', 'Owner'), async (r
 /* === */
 
 /* EDIT ORDERS */
-router.get('/edit-order/:orderId', requireAuth, requireRole('Employee', 'Owner'), async (req, res) =>{
+router.get('/edit-order/:orderId', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) =>{
     const order = req.params.orderId;
     const specificOrder = await Order.findOne({ orderId: order});
 
@@ -392,7 +392,7 @@ router.get('/edit-order/:orderId', requireAuth, requireRole('Employee', 'Owner')
                                orderDetails: orderDetails});
 })
 
-router.post('/edit-order', requireAuth, requireRole('Employee', 'Owner'), async (req, res) =>{
+router.post('/edit-order', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) =>{
     try {
         var { orderId, senderName, receiverName, senderNum, receiverNum,
                 itemNum, itemDesc, itemPrice, 
@@ -438,7 +438,7 @@ router.post('/edit-order', requireAuth, requireRole('Employee', 'Owner'), async 
 /* === */
 
 /* UPDATE ORDERS */
-router.post('/update-order', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
+router.post('/update-order', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         var { id, newStatus, newEDA, newDate, newTime, statusDesc } = req.body;
         
@@ -487,7 +487,7 @@ router.post('/update-order', requireAuth, requireRole('Employee', 'Owner'), asyn
 /* === */
 
 /* DELETE ORDERS */
-router.post('/delete-order', requireAuth, requireRole('Employee', 'Owner'), async (req, res) => {
+router.post('/delete-order', requireAuth('admin'), requireRole('Employee', 'Owner'), async (req, res) => {
     try {
         var { id } = req.body;
         const order = await Order.findOne({ orderId: id });
@@ -505,7 +505,7 @@ router.post('/delete-order', requireAuth, requireRole('Employee', 'Owner'), asyn
 })
 /* === */
 
-router.get('/logout', requireAuth, requireRole('Employee', 'Owner'), (req, res, next) => {
+router.get('/logout', requireAuth('admin'), requireRole('Employee', 'Owner'), (req, res, next) => {
     req.logout((err)=> {
         if (err) {return next(err)};
         res.redirect('/admin');
@@ -514,7 +514,7 @@ router.get('/logout', requireAuth, requireRole('Employee', 'Owner'), (req, res, 
 
 
 /* LOGIN LOGS - Owner Only */
-router.get('/login-logs', requireAuth, requireRole('Owner'), async (req, res) => {
+router.get('/login-logs', requireAuth('admin'), requireRole('Owner'), async (req, res) => {
     try {
         const users = await User.find().select('-password').sort({ lastLoginAttempt: -1 });
 
@@ -523,8 +523,6 @@ router.get('/login-logs', requireAuth, requireRole('Owner'), async (req, res) =>
         const totalFailed = users.reduce((sum, user) =>
             sum + (user.failedLoginAttempts || 0), 0);
         const lockedAccounts = users.filter(user => user.accountLocked).length;
-        const activeUsers = users.filter(user =>
-            user.loginHistory && user.loginHistory.length > 0).length;
 
         res.render('login_logs', {
             layout: "admin.hbs",
@@ -534,7 +532,6 @@ router.get('/login-logs', requireAuth, requireRole('Owner'), async (req, res) =>
             totalSuccessful,
             totalFailed,
             lockedAccounts,
-            activeUsers,
             helpers: {
                 formatDate: function(date) {
                     if (!date) return 'N/A';
@@ -557,7 +554,7 @@ router.get('/login-logs', requireAuth, requireRole('Owner'), async (req, res) =>
 });
 
 /* Get login history for specific user */
-router.get('/login-history/:username', requireAuth, requireRole('Owner'), async (req, res) => {
+router.get('/login-history/:username', requireAuth('admin'), requireRole('Owner'), async (req, res) => {
     try {
         const user = await User.findOne({ username: req.params.username }).select('-password');
         
@@ -573,7 +570,7 @@ router.get('/login-history/:username', requireAuth, requireRole('Owner'), async 
 });
 
 /* Unlock account - Owner only */
-router.post('/unlock-account', requireAuth, requireRole('Owner'), async (req, res) => {
+router.post('/unlock-account', requireAuth('admin'), requireRole('Owner'), async (req, res) => {
     try {
         const { username } = req.body;
         
@@ -600,7 +597,7 @@ router.post('/unlock-account', requireAuth, requireRole('Owner'), async (req, re
 });
 
 /* Export logs - Owner only */
-router.get('/export-logs', requireAuth, requireRole('Owner'), async (req, res) => {
+router.get('/export-logs', requireAuth('admin'), requireRole('Owner'), async (req, res) => {
     try {
         const users = await User.find().select('-password');
         
